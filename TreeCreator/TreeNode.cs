@@ -2,7 +2,7 @@ using ContentInterpreter;
 
 namespace TreeCreator;
 
-public class TreeNode(string name, TokenType tokenType, string content)
+public class TreeNode(string name, TokenType tokenType = TokenType.NONE, string content = "")
 {
     public string? Name { get; set; } = name;
 

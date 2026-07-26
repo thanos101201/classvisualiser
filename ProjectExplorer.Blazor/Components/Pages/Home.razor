@@ -1,0 +1,92 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject HierarchyAnalyzer Analyzer
+
+<PageTitle>Class Hierarchy Explorer</PageTitle>
+
+<div class="explorer-page">
+    <header class="page-header">
+        <h1>Class Hierarchy Explorer</h1>
+        <p>Interactive graph of classes, interfaces, and records in a .NET project.</p>
+    </header>
+
+    <section class="controls">
+        <label class="path-label" for="project-path">Project path</label>
+        <div class="path-row">
+            <input id="project-path"
+                   @bind="_projectPath"
+                   @bind:event="oninput"
+                   class="path-input"
+                   placeholder="/path/to/your/dotnet/project" />
+            <button class="analyze-btn" @onclick="AnalyzeAsync" disabled="@_isLoading">
+                @(_isLoading ? "Analyzing..." : "Analyze")
+            </button>
+        </div>
+    </section>
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="error-banner">@_error</div>
+    }
+
+    @if (_graphData is not null)
+    {
+        <section class="legend">
+            <span class="legend-item class">Class</span>
+            <span class="legend-item interface">Interface</span>
+            <span class="legend-item record">Record</span>
+            <span class="legend-item unknown">Unknown</span>
+        </section>
+
+        <section class="stats">
+            @_graphData.Nodes.Count types · @_graphData.Edges.Count inheritance edges
+        </section>
+
+        @if (_graphData.Nodes.Count == 0)
+        {
+            <div class="empty-state">No types found in the selected project.</div>
+        }
+        else
+        {
+            <ClassHierarchyGraph Data="_graphData" />
+        }
+    }
+</div>
+
+@code {
+    private string _projectPath = "/Users/pratiksinghthakur/perproj/dotnet/Aimmy";
+    private GraphData? _graphData;
+    private string? _error;
+    private bool _isLoading;
+
+    private async Task AnalyzeAsync()
+    {
+        _error = null;
+        _isLoading = true;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_projectPath))
+            {
+                _error = "Please enter a project directory path.";
+                return;
+            }
+
+            if (!Directory.Exists(_projectPath))
+            {
+                _error = $"Directory not found: {_projectPath}";
+                return;
+            }
+
+            _graphData = await Task.Run(() => Analyzer.Analyze(_projectPath));
+        }
+        catch (Exception ex)
+        {
+            _error = $"Analysis failed: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

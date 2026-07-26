@@ -8,7 +8,12 @@ public class TreeManager
 
     public void AddChileNode(string parentName, string chldName)
     {
-        if(_map.TryGetValue(parentName, out var parent) && _map.TryGetValue(chldName, out var child))
+        if(!_map.TryGetValue(parentName, out var parent))
+        {
+            parent = new TreeNode(parentName, TokenType.NONE, "");
+        }
+        
+        if(_map.TryGetValue(chldName, out var child))
         {
             parent.Children.Add(child);
         }
@@ -16,7 +21,15 @@ public class TreeManager
 
     public void AddNode(string childName, TokenType tokenType, string content)
     {
-        _map.TryAdd(childName, new(childName, tokenType, content));
+        if(_map.TryGetValue(childName, out _))
+        {
+            _map[childName].Type = tokenType;
+            _map[childName].Content = content;
+        }
+        else
+        {
+            _map.Add(childName, new(childName, tokenType, content));
+        }
     }
 
     public Dictionary<string, TreeNode> GetMapping() => _map;

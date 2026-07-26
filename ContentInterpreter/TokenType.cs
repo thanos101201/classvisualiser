@@ -11,5 +11,6 @@ public enum TokenType
     RECORD,
     METHOD,
     PROPERTY,
-    COMA
+    COMA,
+    NONE
 };

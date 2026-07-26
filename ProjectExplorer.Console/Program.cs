@@ -1,22 +1,25 @@
-﻿using ContentInterpreter;
+using ContentInterpreter;
 using TreeCreator;
 
 var reader = new ProjectReader.DirectoryReader(@"/Users/pratiksinghthakur/perproj/dotnet/Aimmy");
 var content = reader.GetDirectoryContent();
 var manager = new TreeManager();
-foreach(var ele in content)
+foreach (var ele in content)
 {
     var parser = new ContentParser(ele.Value, manager);
     parser.Parse();
 }
 
 var mp = manager.GetMapping();
-foreach(var ele in mp)
+foreach (var ele in mp)
 {
-    Console.WriteLine(ele.Key);
-    foreach(var ch in ele.Value.Children)
+    if (ele.Value.Children.Count > 0)
     {
-        Console.Write($"{ch.Name}, ");
+        Console.WriteLine(ele.Key);
+        foreach (var ch in ele.Value.Children)
+        {
+            Console.Write($"{ch.Name}, ");
+        }
+        Console.WriteLine("++++++++++++++++");
     }
-    Console.WriteLine("++++++++++++++++");
 }
