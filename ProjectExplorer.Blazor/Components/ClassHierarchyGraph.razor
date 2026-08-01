@@ -3,6 +3,153 @@
 
 <div id="@_containerId" class="hierarchy-graph"></div>
 
+<style>
+    .vis-tooltip {
+    background-color: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 6px !important;
+    padding: 8px 10px !important;
+    max-width: 320px;
+}
+
+.hierarchy-tooltip-header {
+    color: #f1f5f9;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 4px;
+}
+
+.hierarchy-tooltip-list {
+    margin: 4px 0 0;
+    padding-left: 16px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.hierarchy-tooltip-list li {
+    color: #cbd5e1;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.hierarchy-tooltip-empty {
+    color: #94a3b8;
+    font-size: 12px;
+    font-style: italic;
+}
+    .hierarchy-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.hierarchy-modal {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    width: 420px;
+    max-width: 90vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.hierarchy-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #334155;
+}
+
+.hierarchy-modal-title {
+    color: #f1f5f9;
+    font-weight: 600;
+    font-size: 16px;
+    flex: 1;
+}
+
+.hierarchy-modal-type {
+    color: #94a3b8;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.hierarchy-modal-close {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.hierarchy-modal-close:hover {
+    color: #f1f5f9;
+}
+
+.hierarchy-modal-body {
+    padding: 12px 16px 16px;
+    overflow-y: auto;
+}
+
+.hierarchy-modal-method-list {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.hierarchy-modal-method-list li {
+    color: #cbd5e1;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.hierarchy-modal-empty {
+    color: #94a3b8;
+    font-style: italic;
+    font-size: 13px;
+}
+</style>
+
+@if (_selectedNode is not null)
+{
+    <div class="hierarchy-modal-backdrop" @onclick="CloseModal">
+        <div class="hierarchy-modal" @onclick:stopPropagation="true">
+            <div class="hierarchy-modal-header">
+                <span class="hierarchy-modal-title">@_selectedNode.Label</span>
+                <span class="hierarchy-modal-type">@_selectedNode.Type</span>
+                <button class="hierarchy-modal-close" @onclick="CloseModal">&times;</button>
+            </div>
+            <div class="hierarchy-modal-body">
+                @if (_selectedNode.Methods is { Count: > 0 })
+                {
+                    <ul class="hierarchy-modal-method-list">
+                        @foreach (var method in _selectedNode.Methods)
+                        {
+                            <li>@method</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="hierarchy-modal-empty">No methods</p>
+                }
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     [Parameter, EditorRequired]
     public GraphData Data { get; set; } = null!;
@@ -10,16 +157,31 @@
     private readonly string _containerId = $"graph-{Guid.NewGuid():N}";
     private IJSObjectReference? _module;
     private GraphData? _lastRendered;
+    private DotNetObjectReference<ClassHierarchyGraph>? _dotNetRef;
+    private GraphNode? _selectedNode;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         _module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/hierarchyGraph.js");
+        _dotNetRef ??= DotNetObjectReference.Create(this);
 
         if (!ReferenceEquals(_lastRendered, Data))
         {
-            await _module.InvokeVoidAsync("renderGraph", _containerId, Data);
+            await _module.InvokeVoidAsync("renderGraph", _containerId, Data, _dotNetRef);
             _lastRendered = Data;
         }
+    }
+
+    [JSInvokable]
+    public void OnNodeClicked(string nodeId)
+    {
+        _selectedNode = Data.Nodes.FirstOrDefault(n => n.Id == nodeId);
+        StateHasChanged();
+    }
+
+    private void CloseModal()
+    {
+        _selectedNode = null;
     }
 
     public async ValueTask DisposeAsync()
@@ -29,5 +191,7 @@
             await _module.InvokeVoidAsync("destroyGraph", _containerId);
             await _module.DisposeAsync();
         }
+
+        _dotNetRef?.Dispose();
     }
 }

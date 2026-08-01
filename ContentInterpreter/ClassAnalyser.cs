@@ -5,8 +5,16 @@ using Microsoft.CodeAnalysis.MSBuild;
 using System.Text.Json;
 
 namespace ContentInterpreter;
-
-public record HierarchyNode(string Id, string Name, string Namespace, TokenType Kind);
+public record HierarchyMethod(
+    string Name,
+    string ReturnType,
+    List<string> Parameters,
+    string Accessibility,
+    bool IsStatic,
+    bool IsAbstract,
+    bool IsVirtual,
+    bool IsOverride);
+public record HierarchyNode(string Id, string Name, string Namespace, TokenType Kind, List<HierarchyMethod> Methods);
 public record HierarchyEdge(string From, string To, string Relation);
 
 public class ClassAnalyzer
@@ -47,7 +55,7 @@ public class ClassAnalyzer
             {
                 if (semanticModel.GetDeclaredSymbol(typeDecl) is not INamedTypeSymbol symbol)
                     continue;
-
+            
                 AddNode(symbol);
 
                 // Base class, skipping System.Object noise
@@ -76,6 +84,26 @@ public class ClassAnalyzer
         var json = JsonSerializer.Serialize(new { nodes, edges }, new JsonSerializerOptions { WriteIndented = true });
         await File.WriteAllTextAsync(outputPath, json);
     }
+    private static List<HierarchyMethod> GetMethods(INamedTypeSymbol symbol)
+    {
+        return symbol.GetMembers()
+            .OfType<IMethodSymbol>()
+            .Where(m =>
+                m.MethodKind == MethodKind.Ordinary &&   // excludes ctors, operators, property accessors, events
+                !m.IsImplicitlyDeclared)                  // excludes compiler-generated (e.g. record ToString/Equals)
+            .Select(m => new HierarchyMethod(
+                Name: m.Name,
+                ReturnType: m.ReturnType.ToDisplayString(),
+                Parameters: m.Parameters
+                    .Select(p => $"{p.Type.ToDisplayString()} {p.Name}")
+                    .ToList(),
+                Accessibility: m.DeclaredAccessibility.ToString(),
+                IsStatic: m.IsStatic,
+                IsAbstract: m.IsAbstract,
+                IsVirtual: m.IsVirtual,
+                IsOverride: m.IsOverride))
+            .ToList();
+    }
 
     private void AddNode(INamedTypeSymbol symbol)
     {
@@ -86,6 +114,7 @@ public class ClassAnalyzer
             Id: id,
             Name: symbol.Name,
             Namespace: symbol.ContainingNamespace?.ToDisplayString() ?? "",
+            Methods: GetMethods(symbol),
             Kind: symbol.TypeKind switch
             {
                 TypeKind.Interface => TokenType.INTERFACE,

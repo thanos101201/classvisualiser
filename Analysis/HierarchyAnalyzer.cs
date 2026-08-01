@@ -21,7 +21,7 @@ public class HierarchyAnalyzer
 
         foreach(var node in nodes)
         {
-            graphNodes.Add(new(node.Id, node.Name, node.Kind.ToString()));
+            graphNodes.Add(new(node.Id, node.Name, node.Kind.ToString(), node.Methods));
         }
 
         foreach(var edge in edges)
