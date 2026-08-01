@@ -1,25 +1,28 @@
+using Microsoft.Build.Locator;
+
+// using HierarchyExtraction;
 using ContentInterpreter;
-using TreeCreator;
-
-var reader = new ProjectReader.DirectoryReader(@"/Users/pratiksinghthakur/perproj/dotnet/Aimmy");
-var content = reader.GetDirectoryContent();
-var manager = new TreeManager();
-foreach (var ele in content)
+// namespace ProjectExplorer.Console;
+public class Program
 {
-    var parser = new ContentParser(ele.Value, manager);
-    parser.Parse();
-}
-
-var mp = manager.GetMapping();
-foreach (var ele in mp)
-{
-    if (ele.Value.Children.Count > 0)
+    public static async Task Main(string[] args)
     {
-        Console.WriteLine(ele.Key);
-        foreach (var ch in ele.Value.Children)
+        MSBuildLocator.RegisterDefaults(); // first line, before any MSBuild-dependent types load
+        Console.WriteLine("Enter the project path.");
+        var path = Console.ReadLine();
+        var analyser = new ClassAnalyzer();
+        var graph = await analyser.Analyse(path);
+        var nodes = graph.Nodes;
+        var edges = graph.Edges;
+
+        foreach(var ele in nodes)
         {
-            Console.Write($"{ch.Name}, ");
+            Console.Write($"{ele.Name}, ");
         }
-        Console.WriteLine("++++++++++++++++");
+
+        foreach(var edge in edges)
+        {
+            Console.WriteLine($"{edge.To} --- {edge.From}");
+        }
     }
 }

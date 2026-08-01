@@ -12,5 +12,6 @@ public enum TokenType
     METHOD,
     PROPERTY,
     COMA,
+    STRUCT,
     NONE
 };
