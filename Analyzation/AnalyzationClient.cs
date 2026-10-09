@@ -34,12 +34,12 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                     var childNode = CreateNode(NodeType.Leave, symbol.Name, symbol.ContainingNamespace.ToDisplayString());
                     for (var t = symbol.BaseType; t != null; t = t.BaseType)
                     {
-                        if(t == null)
+                        if(t == null || t.Name == "Object" || t.Name == "Window")
                         {
                             continue;
                         }
 
-                        var parentNode = CreateNode(NodeType.Leave, t.Name, t.ContainingNamespace.ToDisplayString());
+                        var parentNode = CreateNode(NodeType.Leave, t.Name, $"{project.Name}.{t.ContainingNamespace.ToDisplayString()}");
                         nodeManager.AddRelation(childNode, parentNode);
                         Console.WriteLine($"{t.BaseType}, {t.Name}, {symbol.Name}");
                     }
@@ -51,7 +51,7 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                             continue;
                         }
 
-                        var parentNode = CreateNode(NodeType.Leave, item.Name, item.ContainingNamespace.ToDisplayString());
+                        var parentNode = CreateNode(NodeType.Leave, item.Name, $"{project.Name}.{item.ContainingNamespace.ToDisplayString()}");
                         nodeManager.AddRelation(childNode, parentNode);
                     }
                 }
@@ -70,7 +70,7 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
         {
             Type = nodeType,
             Name = name,
-            HashName = TreeNode.GenerateMD5(nameSpace),
+            HashName = TreeNode.GenerateMD5($"{nameSpace}.{name}"),
             NameSpace = nameSpace
         };
     }

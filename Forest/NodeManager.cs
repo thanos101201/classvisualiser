@@ -8,7 +8,7 @@ public class NodeManager
 {
     private Dictionary<string, HashSet<string>> _relations = new();
 
-    private HashSet<TreeNode> _nodes = new();
+    private Dictionary<string, TreeNode> _nodes = new();
 
     /// <summary>
     /// Adds a relation between the parent and
@@ -28,6 +28,24 @@ public class NodeManager
         else
         {
             _relations.Add(parent.HashName, new HashSet<string>(){child.HashName});
+        }
+
+        if(_nodes.TryGetValue(parent.HashName, out _))
+        {
+            _nodes[parent.HashName] = parent;
+        }
+        else
+        {
+            _nodes.Add(parent.HashName, parent);
+        }
+
+        if(_nodes.TryGetValue(child.HashName, out _))
+        {
+            _nodes[child.HashName] = child;
+        }
+        else
+        {
+            _nodes.Add(child.HashName, child);
         }
     }
 
@@ -56,7 +74,7 @@ public class NodeManager
         {
             while(children?.Count > 0)
             {
-                var childNode = _nodes.Where(x => children.Contains(x.Name)).ToList();
+                var childNode = _nodes.Where(x => children.Contains(x.Key)).Select(x => x.Value).ToList();
                 ans.AddRange(childNode);
                 _ = _relations.TryGetValue(nodeHash, out children);
             }
