@@ -18,35 +18,24 @@ public class NodeManager
     /// <param name="parent"></param>
     public void AddRelation(TreeNode child, TreeNode parent)
     {
-        parent.Children.Add(child.HashName);
-        child.Parents.Add(parent.HashName);
+        var p = GetOrRegister(parent);
+        var c = GetOrRegister(child);
 
-        if (_relations.TryGetValue(parent.HashName, out var children))
-        {
-            children.Add(child.HashName);
-        }
-        else
-        {
-            _relations.Add(parent.HashName, new HashSet<string>(){child.HashName});
-        }
+        p.Children.Add(c.HashName);
+        c.Parents.Add(p.HashName);
 
-        if(_nodes.TryGetValue(parent.HashName, out _))
-        {
-            _nodes[parent.HashName] = parent;
-        }
-        else
-        {
-            _nodes.Add(parent.HashName, parent);
-        }
+        if (!_relations.TryGetValue(p.HashName, out var set))
+            _relations[p.HashName] = set = new HashSet<string>();
+        set.Add(c.HashName);
+    }
 
-        if(_nodes.TryGetValue(child.HashName, out _))
-        {
-            _nodes[child.HashName] = child;
-        }
-        else
-        {
-            _nodes.Add(child.HashName, child);
-        }
+    private TreeNode GetOrRegister(TreeNode node)
+    {
+        if (_nodes.TryGetValue(node.HashName, out var existing))
+            return existing;
+
+        _nodes[node.HashName] = node;
+        return node;
     }
 
     /// <summary>

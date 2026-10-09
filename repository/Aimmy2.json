@@ -1,17 +1,19 @@
 {
   "09435209130fc5f7ca5ed9f32624db84": {
-    "ID": "1995c492-674b-4d35-8ed4-9699cca5dd47",
+    "ID": "30506fc7-4dff-47bd-91cf-47d66878083d",
     "Type": 2,
     "HashName": "09435209130fc5f7ca5ed9f32624db84",
     "NameSpace": "Aimmy2.System",
     "Name": "IDisposable",
     "Children": [
+      "e26486f9fb3b532a75fbd7f41699ff2f",
+      "20b0d1fc3a7f7a95152423c9fcaef12c",
       "6ca14dff3d32126de2c05de855ae92f2"
     ],
     "Parents": []
   },
   "e26486f9fb3b532a75fbd7f41699ff2f": {
-    "ID": "284a11e0-0b17-42e4-9d6d-4cc73e941ee3",
+    "ID": "8910394a-8ea2-4b4a-ac19-0b76564e5bb9",
     "Type": 2,
     "HashName": "e26486f9fb3b532a75fbd7f41699ff2f",
     "NameSpace": "Aimmy2.AILogic",
@@ -22,7 +24,7 @@
     ]
   },
   "20b0d1fc3a7f7a95152423c9fcaef12c": {
-    "ID": "67efcee4-4eba-42bf-bc31-66daf6376746",
+    "ID": "930a1b5c-bef8-443d-a23a-0dd57cc611c1",
     "Type": 2,
     "HashName": "20b0d1fc3a7f7a95152423c9fcaef12c",
     "NameSpace": "Aimmy2.AILogic",
@@ -33,7 +35,7 @@
     ]
   },
   "6ca14dff3d32126de2c05de855ae92f2": {
-    "ID": "d578180b-28e7-488d-9991-61c2e449c490",
+    "ID": "d5bfb355-f587-45e7-aa46-c50178faa117",
     "Type": 2,
     "HashName": "6ca14dff3d32126de2c05de855ae92f2",
     "NameSpace": "Aimmy2.AILogic",
@@ -44,7 +46,7 @@
     ]
   },
   "3ae5279aefc6eaa1ca7e8234c7a104cd": {
-    "ID": "d15e3a23-380d-45b3-b959-540ae6506122",
+    "ID": "80976c32-d7e4-4e54-90e9-1575ce9343d4",
     "Type": 2,
     "HashName": "3ae5279aefc6eaa1ca7e8234c7a104cd",
     "NameSpace": "Aimmy2.\u003Cglobal namespace\u003E",
@@ -55,7 +57,7 @@
     "Parents": []
   },
   "415e2dd89f248c84b4c4c84e83d33550": {
-    "ID": "0062d638-9b22-4443-bc02-eeba6162b4f2",
+    "ID": "64ea0021-d65e-49ba-a5fc-e70b004bbff6",
     "Type": 2,
     "HashName": "415e2dd89f248c84b4c4c84e83d33550",
     "NameSpace": "Aimmy2",
@@ -66,7 +68,7 @@
     ]
   },
   "9654e2e740b275e5bac921eff5f9f7af": {
-    "ID": "d770b0b3-b9e2-472e-9c04-7eaa357ab1d1",
+    "ID": "c4be1663-212d-4b80-a2ae-4c2c798de4eb",
     "Type": 2,
     "HashName": "9654e2e740b275e5bac921eff5f9f7af",
     "NameSpace": "Aimmy2.System",
@@ -77,7 +79,7 @@
     "Parents": []
   },
   "2982b9c98da99d2d10e7602893e86061": {
-    "ID": "274baa09-4873-40f2-9b9d-d1e7e3d8fc0e",
+    "ID": "24be8d0f-cf23-43ae-ac8d-0e72c41db75f",
     "Type": 2,
     "HashName": "2982b9c98da99d2d10e7602893e86061",
     "NameSpace": "Aimmy2.Class",
@@ -88,18 +90,26 @@
     ]
   },
   "cab5a7130f4ed1d1b9aadd81005ca59b": {
-    "ID": "605c80cd-b9f9-4d08-85ec-41a79c34b458",
+    "ID": "a3990dbb-fc19-4792-8cf8-9f2513a2ebbf",
     "Type": 2,
     "HashName": "cab5a7130f4ed1d1b9aadd81005ca59b",
     "NameSpace": "Aimmy2.System.Windows",
     "Name": "UserControl",
     "Children": [
+      "70ade23ae1e18a74adeecdd5fc7bcabe",
+      "6b34d8cc2c045ca85534734929538b70",
+      "a49776d014ea60392e7e8a9cef204988",
+      "f3027ceefa8a45f1bd1d1cfa6eeb4b92",
+      "cc676d88a7cf17af9b3ee577c3e47757",
+      "eda2740d59e5cf7d39a24af0efa5ea4b",
+      "696920872b1eca851513ac6622193a50",
+      "4845402ff609469108c32467a394abaa",
       "5723819a0953afd73f6ff586660644cd"
     ],
     "Parents": []
   },
   "70ade23ae1e18a74adeecdd5fc7bcabe": {
-    "ID": "0a000ae9-66f7-4992-8d40-357a7edd6aac",
+    "ID": "88e11c3a-41de-4095-b336-95a04cda928b",
     "Type": 2,
     "HashName": "70ade23ae1e18a74adeecdd5fc7bcabe",
     "NameSpace": "Aimmy2.UILibrary",
@@ -110,18 +120,25 @@
     ]
   },
   "4fc45a967f5e4620c03a353d6d4d11c2": {
-    "ID": "c3906e7c-81af-48c9-8885-1c46da62cfd7",
+    "ID": "a98ed912-a770-45cd-a67b-ca5c5c845e60",
     "Type": 2,
     "HashName": "4fc45a967f5e4620c03a353d6d4d11c2",
     "NameSpace": "Aimmy2.\u003Cglobal namespace\u003E",
     "Name": "UserControl",
     "Children": [
+      "e212d1e8cf791118b97599dbc2bd3f34",
+      "f466bb8644c9f182dc7c382a81cc3bae",
+      "01d8f99ec492e6f098700324bae50a3d",
+      "f55f103f8590790a54e689ddf8877fa7",
+      "680270b987e77cf65d4553f3fb30ce2d",
+      "47df1a0cb184bce23f78e0dadd8fe69d",
+      "f26694d306ec09429162c289bb4c8d99",
       "2ff0f7518314a60157c7b3e895ccc73d"
     ],
     "Parents": []
   },
   "e212d1e8cf791118b97599dbc2bd3f34": {
-    "ID": "94c70d14-5c8f-43fe-85b3-2705a89ffbb5",
+    "ID": "5cd109a9-bb14-4e50-b902-4553e36e7d24",
     "Type": 2,
     "HashName": "e212d1e8cf791118b97599dbc2bd3f34",
     "NameSpace": "Aimmy2.UILibrary",
@@ -132,7 +149,7 @@
     ]
   },
   "f466bb8644c9f182dc7c382a81cc3bae": {
-    "ID": "1bd0da8e-2074-4d0f-b129-91a9201854ac",
+    "ID": "aa66ed98-b844-45e9-a531-6a3e10d306e3",
     "Type": 2,
     "HashName": "f466bb8644c9f182dc7c382a81cc3bae",
     "NameSpace": "Aimmy2.UILibrary",
@@ -143,7 +160,7 @@
     ]
   },
   "01d8f99ec492e6f098700324bae50a3d": {
-    "ID": "bd04d6f8-bf3a-432e-9b9e-be0331a27d4a",
+    "ID": "57d2bc3f-56fa-4f6e-8648-245acc4aa9a9",
     "Type": 2,
     "HashName": "01d8f99ec492e6f098700324bae50a3d",
     "NameSpace": "Aimmy2.UILibrary",
@@ -154,7 +171,7 @@
     ]
   },
   "6b34d8cc2c045ca85534734929538b70": {
-    "ID": "2ba1138b-7931-4a1b-a1b6-ee25afe08e37",
+    "ID": "2e5e3405-c8e4-4a64-9326-eec62ed6b1f6",
     "Type": 2,
     "HashName": "6b34d8cc2c045ca85534734929538b70",
     "NameSpace": "UILibrary",
@@ -165,7 +182,7 @@
     ]
   },
   "a49776d014ea60392e7e8a9cef204988": {
-    "ID": "91e76ec6-0dbc-40be-a8af-f6b4bc92c25b",
+    "ID": "cc2cc6b3-7a66-4893-b3cd-a02d889a425c",
     "Type": 2,
     "HashName": "a49776d014ea60392e7e8a9cef204988",
     "NameSpace": "UILibrary",
@@ -176,7 +193,7 @@
     ]
   },
   "f3027ceefa8a45f1bd1d1cfa6eeb4b92": {
-    "ID": "a9f9aa91-621c-4b4e-9dac-6878a06f4b56",
+    "ID": "a7298689-a098-4233-bdae-4fd251aef0c8",
     "Type": 2,
     "HashName": "f3027ceefa8a45f1bd1d1cfa6eeb4b92",
     "NameSpace": "Aimmy2.UILibrary",
@@ -187,7 +204,7 @@
     ]
   },
   "cc676d88a7cf17af9b3ee577c3e47757": {
-    "ID": "340a4e6f-9726-4acd-a886-16afb8cfa3c5",
+    "ID": "31bd1ff6-2d1c-4959-9f27-8f899485af3f",
     "Type": 2,
     "HashName": "cc676d88a7cf17af9b3ee577c3e47757",
     "NameSpace": "Aimmy2.UILibrary",
@@ -198,7 +215,7 @@
     ]
   },
   "eda2740d59e5cf7d39a24af0efa5ea4b": {
-    "ID": "efd31444-122b-44fa-b0c5-f05d6aab754f",
+    "ID": "1aa9b304-a53e-446b-8226-1551fe9139a5",
     "Type": 2,
     "HashName": "eda2740d59e5cf7d39a24af0efa5ea4b",
     "NameSpace": "Aimmy2.UILibrary",
@@ -209,7 +226,7 @@
     ]
   },
   "f55f103f8590790a54e689ddf8877fa7": {
-    "ID": "c42fae1c-5019-44d8-bf7d-f1f93ed83e80",
+    "ID": "361fc68c-cbec-4a38-9f42-a1e278bdd48e",
     "Type": 2,
     "HashName": "f55f103f8590790a54e689ddf8877fa7",
     "NameSpace": "Aimmy2.UILibrary",
@@ -220,7 +237,7 @@
     ]
   },
   "696920872b1eca851513ac6622193a50": {
-    "ID": "9ae57e2b-f9a6-4860-bf92-65e443040456",
+    "ID": "9a70078d-7a7e-4da6-9e0b-78fe81bfbec5",
     "Type": 2,
     "HashName": "696920872b1eca851513ac6622193a50",
     "NameSpace": "Aimmy2.UILibrary",
@@ -231,7 +248,7 @@
     ]
   },
   "4845402ff609469108c32467a394abaa": {
-    "ID": "f3209f72-d014-42fa-8a44-1c25210493f5",
+    "ID": "45224947-76d3-4fc5-bb3e-22aeb67ab738",
     "Type": 2,
     "HashName": "4845402ff609469108c32467a394abaa",
     "NameSpace": "Aimmy2.UILibrary",
@@ -242,7 +259,7 @@
     ]
   },
   "5723819a0953afd73f6ff586660644cd": {
-    "ID": "11d9aa35-0a52-4ef3-9f34-ef5d25818f4a",
+    "ID": "b735e384-f902-414f-b237-1dab473a5dfb",
     "Type": 2,
     "HashName": "5723819a0953afd73f6ff586660644cd",
     "NameSpace": "Aimmy2.UILibrary",
@@ -253,7 +270,7 @@
     ]
   },
   "680270b987e77cf65d4553f3fb30ce2d": {
-    "ID": "64cb9727-eebd-47d0-8f26-7bf8780e1af5",
+    "ID": "cdfa1529-d73b-4a51-b5a1-a101d9fa53ed",
     "Type": 2,
     "HashName": "680270b987e77cf65d4553f3fb30ce2d",
     "NameSpace": "Aimmy2.Controls",
@@ -264,7 +281,7 @@
     ]
   },
   "47df1a0cb184bce23f78e0dadd8fe69d": {
-    "ID": "f326436a-0f02-416d-b37f-25ee98c5331d",
+    "ID": "b000d1cf-afc2-4158-8322-c891ce44ac9e",
     "Type": 2,
     "HashName": "47df1a0cb184bce23f78e0dadd8fe69d",
     "NameSpace": "Aimmy2.Controls",
@@ -275,7 +292,7 @@
     ]
   },
   "f26694d306ec09429162c289bb4c8d99": {
-    "ID": "84966df8-f317-4426-bb7c-cd785ace7004",
+    "ID": "b3fb0f5b-c66e-4bcd-8a76-37758f00b160",
     "Type": 2,
     "HashName": "f26694d306ec09429162c289bb4c8d99",
     "NameSpace": "Aimmy2.Controls",
@@ -286,7 +303,7 @@
     ]
   },
   "2ff0f7518314a60157c7b3e895ccc73d": {
-    "ID": "5d816f68-4a52-43ea-85e0-391884ac48a5",
+    "ID": "7b9fd18f-1c70-467e-8ad0-20ee4dc687b7",
     "Type": 2,
     "HashName": "2ff0f7518314a60157c7b3e895ccc73d",
     "NameSpace": "Aimmy2.Controls",
@@ -297,7 +314,7 @@
     ]
   },
   "3d1e5929187a615bb169240021e9be3e": {
-    "ID": "09619dd1-2e2d-48d6-a36a-5ee48c5b48d1",
+    "ID": "2a7cb81c-3c92-4729-a160-37fb4d5ad85f",
     "Type": 2,
     "HashName": "3d1e5929187a615bb169240021e9be3e",
     "NameSpace": "Aimmy2.System.ComponentModel",
@@ -308,7 +325,7 @@
     "Parents": []
   },
   "cc252ed84ac2209e06cc55475fa83fd3": {
-    "ID": "9b275dc9-d7b3-44dc-a1c8-da6136617f26",
+    "ID": "f6126ce4-8634-48ce-9cb4-2a0c982e4fd5",
     "Type": 2,
     "HashName": "cc252ed84ac2209e06cc55475fa83fd3",
     "NameSpace": "Visuality",
