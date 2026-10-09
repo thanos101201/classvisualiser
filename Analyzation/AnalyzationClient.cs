@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Data;
 using Forest;
 using Microsoft.Build.Locator;
@@ -9,6 +10,8 @@ namespace Analyzation;
 
 public class AnalyzationClient(NodeManager nodeManager, FileRepository repository)
 {
+    private Dictionary<string, HashSet<string>> _projectNodeMap = new();
+
     public async Task AnalyzeAsync(string slnPath)
     {
         MSBuildLocator.RegisterDefaults();
@@ -18,6 +21,8 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
         foreach (var project in solution.Projects)
         {
             var compilation = await project.GetCompilationAsync();
+            _projectNodeMap.Add(project.Name, new());
+
             foreach (var tree in compilation.SyntaxTrees)
             {
                 var model = compilation.GetSemanticModel(tree);
@@ -32,6 +37,7 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                     var nameSpace = symbol.ContainingNamespace.ToDisplayString();      // transitive
                     // Walk the full chain:
                     var childNode = CreateNode(NodeType.Leave, symbol.Name, symbol.ContainingNamespace.ToDisplayString());
+                    _projectNodeMap[project.Name].Add(childNode.HashName);
                     for (var t = symbol.BaseType; t != null; t = t.BaseType)
                     {
                         if(t == null || t.Name == "Object" || t.Name == "Window")
@@ -61,7 +67,8 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
         }
 
         var relations = nodeManager.GetRelations();
-        await repository.WriteContentAsync(relations, @$"Index.Json");
+        await repository.WriteContentAsync(relations, @$"Index");
+        await repository.WriteContentAsync(JsonSerializer.Serialize(_projectNodeMap, new JsonSerializerOptions{WriteIndented=true}), "ProjectsNodeIndex");
     }
 
     private TreeNode CreateNode(NodeType nodeType, string name, string nameSpace)
