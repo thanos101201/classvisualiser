@@ -1,0 +1,338 @@
+{
+  "09435209130fc5f7ca5ed9f32624db84": {
+    "ID": "32653fcf-8fdf-4c3b-8c5c-c3a0fa222168",
+    "Type": 2,
+    "HashName": "09435209130fc5f7ca5ed9f32624db84",
+    "NameSpace": "Aimmy2.System",
+    "Name": "IDisposable",
+    "Children": [
+      "e26486f9fb3b532a75fbd7f41699ff2f",
+      "20b0d1fc3a7f7a95152423c9fcaef12c",
+      "6ca14dff3d32126de2c05de855ae92f2"
+    ],
+    "Parents": []
+  },
+  "e26486f9fb3b532a75fbd7f41699ff2f": {
+    "ID": "11d11b76-28e1-436b-a64e-1767e41acf82",
+    "Type": 2,
+    "HashName": "e26486f9fb3b532a75fbd7f41699ff2f",
+    "NameSpace": "Aimmy2.AILogic",
+    "Name": "AIManager",
+    "Children": [],
+    "Parents": [
+      "09435209130fc5f7ca5ed9f32624db84"
+    ]
+  },
+  "20b0d1fc3a7f7a95152423c9fcaef12c": {
+    "ID": "4c6feef5-aae1-48b1-a18a-30fcd9ae8079",
+    "Type": 2,
+    "HashName": "20b0d1fc3a7f7a95152423c9fcaef12c",
+    "NameSpace": "Aimmy2.AILogic",
+    "Name": "BenchmarkScope",
+    "Children": [],
+    "Parents": [
+      "09435209130fc5f7ca5ed9f32624db84"
+    ]
+  },
+  "6ca14dff3d32126de2c05de855ae92f2": {
+    "ID": "452d983b-4469-4724-936a-3921a43f4dd3",
+    "Type": 2,
+    "HashName": "6ca14dff3d32126de2c05de855ae92f2",
+    "NameSpace": "Aimmy2.AILogic",
+    "Name": "ResourceUsageSampler",
+    "Children": [],
+    "Parents": [
+      "09435209130fc5f7ca5ed9f32624db84"
+    ]
+  },
+  "3ae5279aefc6eaa1ca7e8234c7a104cd": {
+    "ID": "3426934f-524d-4092-8c6d-7ef84bb87a5b",
+    "Type": 2,
+    "HashName": "3ae5279aefc6eaa1ca7e8234c7a104cd",
+    "NameSpace": "Aimmy2.\u003Cglobal namespace\u003E",
+    "Name": "Application",
+    "Children": [
+      "415e2dd89f248c84b4c4c84e83d33550"
+    ],
+    "Parents": []
+  },
+  "415e2dd89f248c84b4c4c84e83d33550": {
+    "ID": "a83b7063-934c-43fb-be48-8395da3038a7",
+    "Type": 2,
+    "HashName": "415e2dd89f248c84b4c4c84e83d33550",
+    "NameSpace": "Aimmy2",
+    "Name": "App",
+    "Children": [],
+    "Parents": [
+      "3ae5279aefc6eaa1ca7e8234c7a104cd"
+    ]
+  },
+  "9654e2e740b275e5bac921eff5f9f7af": {
+    "ID": "36366c66-286d-4ee5-acf1-2e267cbec5fc",
+    "Type": 2,
+    "HashName": "9654e2e740b275e5bac921eff5f9f7af",
+    "NameSpace": "Aimmy2.System",
+    "Name": "EventArgs",
+    "Children": [
+      "2982b9c98da99d2d10e7602893e86061"
+    ],
+    "Parents": []
+  },
+  "2982b9c98da99d2d10e7602893e86061": {
+    "ID": "cf8ed224-928e-4146-9513-25b91b934256",
+    "Type": 2,
+    "HashName": "2982b9c98da99d2d10e7602893e86061",
+    "NameSpace": "Aimmy2.Class",
+    "Name": "DisplayChangedEventArgs",
+    "Children": [],
+    "Parents": [
+      "9654e2e740b275e5bac921eff5f9f7af"
+    ]
+  },
+  "cab5a7130f4ed1d1b9aadd81005ca59b": {
+    "ID": "234c74ae-ec01-432a-b0e9-ed5915f59480",
+    "Type": 2,
+    "HashName": "cab5a7130f4ed1d1b9aadd81005ca59b",
+    "NameSpace": "Aimmy2.System.Windows",
+    "Name": "UserControl",
+    "Children": [
+      "70ade23ae1e18a74adeecdd5fc7bcabe",
+      "6b34d8cc2c045ca85534734929538b70",
+      "a49776d014ea60392e7e8a9cef204988",
+      "f3027ceefa8a45f1bd1d1cfa6eeb4b92",
+      "cc676d88a7cf17af9b3ee577c3e47757",
+      "eda2740d59e5cf7d39a24af0efa5ea4b",
+      "696920872b1eca851513ac6622193a50",
+      "4845402ff609469108c32467a394abaa",
+      "5723819a0953afd73f6ff586660644cd"
+    ],
+    "Parents": []
+  },
+  "70ade23ae1e18a74adeecdd5fc7bcabe": {
+    "ID": "7a4d1e05-2089-4990-bd84-4c9fd6a2fb61",
+    "Type": 2,
+    "HashName": "70ade23ae1e18a74adeecdd5fc7bcabe",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "AColorChanger",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ]
+  },
+  "4fc45a967f5e4620c03a353d6d4d11c2": {
+    "ID": "aefd3dfc-a8a9-4eb6-aa52-d26dd6d312e0",
+    "Type": 2,
+    "HashName": "4fc45a967f5e4620c03a353d6d4d11c2",
+    "NameSpace": "Aimmy2.\u003Cglobal namespace\u003E",
+    "Name": "UserControl",
+    "Children": [
+      "e212d1e8cf791118b97599dbc2bd3f34",
+      "f466bb8644c9f182dc7c382a81cc3bae",
+      "01d8f99ec492e6f098700324bae50a3d",
+      "f55f103f8590790a54e689ddf8877fa7",
+      "680270b987e77cf65d4553f3fb30ce2d",
+      "47df1a0cb184bce23f78e0dadd8fe69d",
+      "f26694d306ec09429162c289bb4c8d99",
+      "2ff0f7518314a60157c7b3e895ccc73d"
+    ],
+    "Parents": []
+  },
+  "e212d1e8cf791118b97599dbc2bd3f34": {
+    "ID": "b217a356-2afe-4a96-bf57-c66d087ece10",
+    "Type": 2,
+    "HashName": "e212d1e8cf791118b97599dbc2bd3f34",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "AColorWheel",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ]
+  },
+  "f466bb8644c9f182dc7c382a81cc3bae": {
+    "ID": "1d9e8cb8-2433-45f0-88e7-34e9ce7ed444",
+    "Type": 2,
+    "HashName": "f466bb8644c9f182dc7c382a81cc3bae",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ADisplaySelector",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ]
+  },
+  "01d8f99ec492e6f098700324bae50a3d": {
+    "ID": "ecd1fa30-cae3-4b52-8686-4508f3f172ee",
+    "Type": 2,
+    "HashName": "01d8f99ec492e6f098700324bae50a3d",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ADownloadGateway",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ]
+  },
+  "6b34d8cc2c045ca85534734929538b70": {
+    "ID": "edb4c335-2a2b-4616-87ae-1ffa215e17f5",
+    "Type": 2,
+    "HashName": "6b34d8cc2c045ca85534734929538b70",
+    "NameSpace": "UILibrary",
+    "Name": "ADropdown",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ]
+  },
+  "a49776d014ea60392e7e8a9cef204988": {
+    "ID": "81a25cd1-4733-4fdc-a015-4e3e003d19e9",
+    "Type": 2,
+    "HashName": "a49776d014ea60392e7e8a9cef204988",
+    "NameSpace": "UILibrary",
+    "Name": "AFileLocator",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ]
+  },
+  "f3027ceefa8a45f1bd1d1cfa6eeb4b92": {
+    "ID": "11fa8fa7-20c3-4f07-bf22-0720a3b0aff4",
+    "Type": 2,
+    "HashName": "f3027ceefa8a45f1bd1d1cfa6eeb4b92",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "AKeyChanger",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ]
+  },
+  "cc676d88a7cf17af9b3ee577c3e47757": {
+    "ID": "efc37682-3630-44f2-b4f5-5ca567426262",
+    "Type": 2,
+    "HashName": "cc676d88a7cf17af9b3ee577c3e47757",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "APButton",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ]
+  },
+  "eda2740d59e5cf7d39a24af0efa5ea4b": {
+    "ID": "c76aabf3-cc51-43e5-8543-ca92017f2cb4",
+    "Type": 2,
+    "HashName": "eda2740d59e5cf7d39a24af0efa5ea4b",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ARectangleBottom",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ]
+  },
+  "f55f103f8590790a54e689ddf8877fa7": {
+    "ID": "e72c3ecf-b826-48b9-925b-8ce3b51133ce",
+    "Type": 2,
+    "HashName": "f55f103f8590790a54e689ddf8877fa7",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ASlider",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ]
+  },
+  "696920872b1eca851513ac6622193a50": {
+    "ID": "c59600af-9eb9-41c5-ba13-7a808ed8cad9",
+    "Type": 2,
+    "HashName": "696920872b1eca851513ac6622193a50",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ASpacer",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ]
+  },
+  "4845402ff609469108c32467a394abaa": {
+    "ID": "276d2ca3-e147-4270-88ba-004e32ef09bf",
+    "Type": 2,
+    "HashName": "4845402ff609469108c32467a394abaa",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ATitle",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ]
+  },
+  "5723819a0953afd73f6ff586660644cd": {
+    "ID": "d4681da1-b1d6-415d-985f-721d51592751",
+    "Type": 2,
+    "HashName": "5723819a0953afd73f6ff586660644cd",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "AToggle",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ]
+  },
+  "680270b987e77cf65d4553f3fb30ce2d": {
+    "ID": "6c692a4b-338a-4eac-89c2-164ac56ef12c",
+    "Type": 2,
+    "HashName": "680270b987e77cf65d4553f3fb30ce2d",
+    "NameSpace": "Aimmy2.Controls",
+    "Name": "AboutMenuControl",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ]
+  },
+  "47df1a0cb184bce23f78e0dadd8fe69d": {
+    "ID": "6a27f2e9-80b7-416b-804f-34c2f6328cd9",
+    "Type": 2,
+    "HashName": "47df1a0cb184bce23f78e0dadd8fe69d",
+    "NameSpace": "Aimmy2.Controls",
+    "Name": "AimMenuControl",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ]
+  },
+  "f26694d306ec09429162c289bb4c8d99": {
+    "ID": "51f1b2b7-88a9-49ed-be7f-8edd52667fab",
+    "Type": 2,
+    "HashName": "f26694d306ec09429162c289bb4c8d99",
+    "NameSpace": "Aimmy2.Controls",
+    "Name": "ModelMenuControl",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ]
+  },
+  "2ff0f7518314a60157c7b3e895ccc73d": {
+    "ID": "9fab2e91-cb85-4696-b8ef-053725cd76d7",
+    "Type": 2,
+    "HashName": "2ff0f7518314a60157c7b3e895ccc73d",
+    "NameSpace": "Aimmy2.Controls",
+    "Name": "SettingsMenuControl",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ]
+  },
+  "3d1e5929187a615bb169240021e9be3e": {
+    "ID": "d9008f61-55a0-4f0f-8b3c-f0ae4ca88868",
+    "Type": 2,
+    "HashName": "3d1e5929187a615bb169240021e9be3e",
+    "NameSpace": "Aimmy2.System.ComponentModel",
+    "Name": "INotifyPropertyChanged",
+    "Children": [
+      "cc252ed84ac2209e06cc55475fa83fd3"
+    ],
+    "Parents": []
+  },
+  "cc252ed84ac2209e06cc55475fa83fd3": {
+    "ID": "96641499-dda7-4f41-959a-7b42aa171e1f",
+    "Type": 2,
+    "HashName": "cc252ed84ac2209e06cc55475fa83fd3",
+    "NameSpace": "Visuality",
+    "Name": "NoticeItem",
+    "Children": [],
+    "Parents": [
+      "3d1e5929187a615bb169240021e9be3e"
+    ]
+  }
+}
