@@ -17,11 +17,18 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
         MSBuildLocator.RegisterDefaults();
         using var workspace = MSBuildWorkspace.Create();
         var solution = await workspace.OpenSolutionAsync(slnPath);
+        var solutionName = Path.GetFileNameWithoutExtension(solution.FilePath);
 
         foreach (var project in solution.Projects)
         {
+            // if (repository.CheckFileExistence(project.Name))
+            // {
+            //     continue;
+            // }
+
             var compilation = await project.GetCompilationAsync();
             _projectNodeMap.Add(project.Name, new());
+            repository.CreateDirectory(project.Name);
 
             foreach (var tree in compilation.SyntaxTrees)
             {
@@ -35,8 +42,9 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                     var ifaces = symbol.Interfaces;               // direct
                     var allIfaces = symbol.AllInterfaces;
                     var nameSpace = symbol.ContainingNamespace.ToDisplayString();      // transitive
+                    var paths = GetSourceFiles(symbol);
                     // Walk the full chain:
-                    var childNode = CreateNode(NodeType.Leave, symbol.Name, symbol.ContainingNamespace.ToDisplayString());
+                    var childNode = CreateNode(NodeType.Leave, symbol.Name, symbol.ContainingNamespace.ToDisplayString(), paths);
                     _projectNodeMap[project.Name].Add(childNode.HashName);
                     for (var t = symbol.BaseType; t != null; t = t.BaseType)
                     {
@@ -44,10 +52,11 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                         {
                             continue;
                         }
+                        var parentPaths = GetSourceFiles(t);
 
-                        var parentNode = CreateNode(NodeType.Leave, t.Name, $"{project.Name}.{t.ContainingNamespace.ToDisplayString()}");
+                        var parentNode = CreateNode(NodeType.Leave, t.Name, $"{project.Name}.{t.ContainingNamespace.ToDisplayString()}", parentPaths);
                         nodeManager.AddRelation(childNode, parentNode);
-                        Console.WriteLine($"{t.BaseType}, {t.Name}, {symbol.Name}");
+                        // Console.WriteLine($"{t.BaseType}, {t.Name}, {symbol.Name}");
                     }
 
                     foreach(var item in allIfaces)
@@ -57,28 +66,37 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                             continue;
                         }
 
-                        var parentNode = CreateNode(NodeType.Leave, item.Name, $"{project.Name}.{item.ContainingNamespace.ToDisplayString()}");
+                        var interFPath = GetSourceFiles(item);
+                        var parentNode = CreateNode(NodeType.Leave, item.Name, $"{project.Name}.{item.ContainingNamespace.ToDisplayString()}", interFPath);
                         nodeManager.AddRelation(childNode, parentNode);
                     }
                 }
                 var node = nodeManager.GetSerializedNodes();
-                await repository.WriteContentAsync(node, @$"{project.FilePath}/{project.Name}");
+                await repository.WriteContentAsync(node, @$"{solutionName}/{project.Name}");
             }
         }
 
         var relations = nodeManager.GetRelations();
-        await repository.WriteContentAsync(relations, @$"Index");
+        await repository.WriteContentAsync(relations, @$"{solutionName}");
         await repository.WriteContentAsync(JsonSerializer.Serialize(_projectNodeMap, new JsonSerializerOptions{WriteIndented=true}), "ProjectsNodeIndex");
     }
 
-    private TreeNode CreateNode(NodeType nodeType, string name, string nameSpace)
+    private TreeNode CreateNode(NodeType nodeType, string name, string nameSpace, List<string> filePaths)
     {
         return new TreeNode()
         {
             Type = nodeType,
             Name = name,
             HashName = TreeNode.GenerateMD5($"{nameSpace}.{name}"),
-            NameSpace = nameSpace
+            NameSpace = nameSpace,
+            FilePaths = filePaths
         };
     }
+
+    private static List<string> GetSourceFiles(INamedTypeSymbol symbol) =>
+    symbol.Locations
+        .Where(l => l.IsInSource)
+        .Select(l => l.SourceTree!.FilePath)
+        .Distinct()
+        .ToList();
 }

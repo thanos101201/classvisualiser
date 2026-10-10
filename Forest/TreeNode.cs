@@ -18,6 +18,8 @@ public record TreeNode
 
     public List<string> Parents { get; init; } = new();
 
+    public List<string> FilePaths { get; set; }
+
     /// <summary>
     /// Generates the hash value for the fully
     /// qualified name of any type.

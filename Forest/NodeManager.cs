@@ -59,13 +59,13 @@ public class NodeManager
     {
         var ans = new List<TreeNode>();
         
-        if(_relations.TryGetValue(nodeHash, out var children))
+        var parents = _relations.Where(x => x.Value.Contains(nodeHash)).ToList();
+
+        foreach(var parent in parents)
         {
-            while(children?.Count > 0)
+            if(_nodes.TryGetValue(parent.Key, out var par))
             {
-                var childNode = _nodes.Where(x => children.Contains(x.Key)).Select(x => x.Value).ToList();
-                ans.AddRange(childNode);
-                _ = _relations.TryGetValue(nodeHash, out children);
+                ans.Add(par);
             }
         }
 
@@ -77,4 +77,22 @@ public class NodeManager
     public void ClearNodes() => _nodes.Clear();
 
     public string GetRelations() => JsonSerializer.Serialize(_relations, new JsonSerializerOptions{WriteIndented=true});
+
+    private void AddRelation(Dictionary<string, HashSet<string>> relation)
+    {
+        foreach(var pair in relation)
+        {
+            if (_relations.TryGetValue(pair.Key, out var rln))
+            {
+                foreach(var child in pair.Value)
+                {
+                    _relations[pair.Key].Add(child);
+                }
+            }
+            else
+            {
+                _relations.Add(pair.Key, pair.Value);
+            }
+        }
+    }
 }
