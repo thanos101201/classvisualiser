@@ -77,7 +77,7 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
         }
 
         var relations = nodeManager.GetRelations();
-        await repository.WriteContentAsync(relations, @$"{solutionName}");
+        await repository.WriteContentAsync(relations, @$"{solutionName}.sln");
         await repository.WriteContentAsync(JsonSerializer.Serialize(_projectNodeMap, new JsonSerializerOptions{WriteIndented=true}), "ProjectsNodeIndex");
     }
 

@@ -14,6 +14,11 @@ The dev server reads JSON directly from `../repository` (no copy step). Producti
 
 The graph draws **only nodes that appear in the relations JSON** (as a parent key or child hash). `ProjectsNodeIndex.json` lists every class in a project from analysis; many of those may not appear in a partial `Aimmy2.json`. Use **Show classes without edges** in the UI to include index-only classes as isolated nodes.
 
+### Choosing a graph file
+
+- **Graph JSON** dropdown — lists relation files in `repository/` (e.g. `Aimmy2.json`). Changing the selection reloads and re-renders the graph.
+- **Browse…** — open any `.json` on your machine (relations map or TreeNode `nodes.json`). Local files are not copied into `repository/`.
+
 ## Run
 
 ```bash

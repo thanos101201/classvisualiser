@@ -37,6 +37,41 @@ export function parseNodeStore(raw: unknown): NodeStore | null {
   return null
 }
 
+function isRelationsMap(raw: unknown): raw is RelationsMap {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return false
+  return Object.values(raw as Record<string, unknown>).every(
+    (v) => Array.isArray(v) && v.every((item) => typeof item === 'string'),
+  )
+}
+
+/** Parse a browsed JSON file: relations map (e.g. Aimmy2.json) or TreeNode store. */
+export function parseGraphJsonContent(raw: unknown): {
+  relations: RelationsMap
+  nodeStore: NodeStore | null
+} {
+  const nodeStore = parseNodeStore(raw)
+  if (nodeStore) {
+    return { relations: {}, nodeStore }
+  }
+  if (!isRelationsMap(raw)) {
+    throw new Error(
+      'Unsupported JSON: expected parent→child hash map or TreeNode metadata object.',
+    )
+  }
+  return { relations: raw, nodeStore: null }
+}
+
+export function relationsFromNodeStore(store: NodeStore): RelationsMap {
+  const relations: RelationsMap = {}
+  for (const node of Object.values(store)) {
+    const parent = node.HashName
+    if (!parent) continue
+    const children = node.Children ?? []
+    if (children.length) relations[parent] = [...children]
+  }
+  return relations
+}
+
 /** All hashes that appear as a parent key or child value in a relations file. */
 export function collectRelationNodeIds(relations: RelationsMap): Set<string> {
   const ids = new Set<string>()
@@ -103,7 +138,9 @@ export function listProjects(index: ProjectsNodeIndex): string[] {
   return Object.keys(index).sort((a, b) => a.localeCompare(b))
 }
 
-async function listGraphFiles(baseUrl: string): Promise<string[]> {
+export async function listRepositoryGraphFiles(
+  baseUrl: string,
+): Promise<string[]> {
   try {
     const res = await fetch('/api/repository/graph-files')
     if (res.ok) {
@@ -183,7 +220,7 @@ export async function loadRepositoryBundle(
   const projects = listProjects(projectsIndex)
   const project = preferredProject ?? projects[0] ?? ''
 
-  const graphFiles = await listGraphFiles(baseUrl)
+  const graphFiles = await listRepositoryGraphFiles(baseUrl)
   const graphFile = pickGraphFile(graphFiles, project)
   if (!graphFile) {
     throw new Error(

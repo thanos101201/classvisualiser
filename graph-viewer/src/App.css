@@ -49,6 +49,43 @@
   font-size: 0.875rem;
 }
 
+.graph-file-picker select {
+  min-width: 11rem;
+  max-width: 14rem;
+}
+
+.graph-file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.browse-btn {
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #334155;
+  color: #f8fafc;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.browse-btn:hover {
+  background: #475569;
+}
+
+.local-file-hint {
+  margin-top: 0.2rem;
+  font-size: 0.7rem;
+  color: #64748b;
+  font-family: ui-monospace, monospace;
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .orphan-toggle {
   display: flex;
   align-items: center;

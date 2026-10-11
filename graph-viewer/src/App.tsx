@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type FormEvent,
 } from 'react'
@@ -9,9 +10,12 @@ import { GraphViewer3D } from './components/GraphViewer3D'
 import {
   buildGraphData,
   listProjects,
+  listRepositoryGraphFiles,
+  loadGraphRelations,
   loadProjectNodeStore,
-  loadRepositoryBundle,
+  loadProjectsIndex,
 } from './lib/buildGraphData'
+import { readGraphFromJsonFile } from './lib/loadGraphFromFile'
 import { findNodeByHash } from './lib/findNodeByHash'
 import type {
   GraphNode,
@@ -38,19 +42,79 @@ function App() {
   const [highlightId, setHighlightId] = useState<string | null>(null)
   const [searchFeedback, setSearchFeedback] = useState<string | null>(null)
   const [showOrphanNodes, setShowOrphanNodes] = useState(false)
+  const [availableGraphFiles, setAvailableGraphFiles] = useState<string[]>([])
+  const [graphSource, setGraphSource] = useState<'repository' | 'local'>(
+    'repository',
+  )
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const clearSelection = useCallback(() => {
+    setSelected(null)
+    setHighlightId(null)
+    setSearchFeedback(null)
+  }, [])
+
+  const applyGraphPayload = useCallback(
+    (
+      payload: {
+        relations: RelationsMap
+        nodeStore: NodeStore | null
+        fileName: string
+      },
+      source: 'repository' | 'local',
+    ) => {
+      setRelations(payload.relations)
+      setNodeStore(payload.nodeStore)
+      setGraphFile(payload.fileName)
+      setGraphSource(source)
+      clearSelection()
+    },
+    [clearSelection],
+  )
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
-        const bundle = await loadRepositoryBundle(REPO_BASE)
+        const [projectsIndex, graphFiles] = await Promise.all([
+          loadProjectsIndex(REPO_BASE),
+          listRepositoryGraphFiles(REPO_BASE),
+        ])
         if (cancelled) return
-        setProjectsIndex(bundle.projectsIndex)
-        setRelations(bundle.relations)
-        setNodeStore(bundle.nodeStore)
-        setGraphFile(bundle.graphFile)
-        const projects = listProjects(bundle.projectsIndex)
-        setProject(projects[0] ?? '')
+
+        setProjectsIndex(projectsIndex)
+        setAvailableGraphFiles(graphFiles)
+
+        const projects = listProjects(projectsIndex)
+        const defaultProject = projects[0] ?? ''
+        setProject(defaultProject)
+
+        const initialFile =
+          graphFiles.find(
+            (f) => f.replace(/\.json$/i, '') === defaultProject,
+          ) ?? graphFiles[0]
+
+        if (!initialFile) {
+          setError(
+            'No graph JSON in repository/ (e.g. Aimmy2.json). Use Browse to open a file.',
+          )
+          return
+        }
+
+        const graph = await loadGraphRelations(REPO_BASE, initialFile)
+        const optionalNodes = defaultProject
+          ? await loadProjectNodeStore(REPO_BASE, defaultProject)
+          : null
+        if (cancelled) return
+
+        applyGraphPayload(
+          {
+            relations: graph.relations,
+            nodeStore: optionalNodes ?? graph.nodeStore,
+            fileName: initialFile,
+          },
+          'repository',
+        )
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : 'Failed to load graph data')
@@ -62,7 +126,33 @@ function App() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [applyGraphPayload])
+
+  const loadRepositoryGraph = useCallback(
+    async (fileName: string) => {
+      setLoading(true)
+      setError(null)
+      try {
+        const graph = await loadGraphRelations(REPO_BASE, fileName)
+        const optionalNodes = project
+          ? await loadProjectNodeStore(REPO_BASE, project)
+          : null
+        applyGraphPayload(
+          {
+            relations: graph.relations,
+            nodeStore: optionalNodes ?? graph.nodeStore,
+            fileName,
+          },
+          'repository',
+        )
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Failed to load graph file')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [applyGraphPayload, project],
+  )
 
   useEffect(() => {
     if (!project) return
@@ -79,10 +169,11 @@ function App() {
   }, [project])
 
   const graphData = useMemo(() => {
-    if (!projectsIndex || !relations || !project) {
+    if (!relations) {
       return { nodes: [], links: [] }
     }
-    const hashes = projectsIndex[project] ?? []
+    const hashes =
+      projectsIndex && project ? (projectsIndex[project] ?? []) : []
     return buildGraphData(relations, hashes, nodeStore, {
       includeOrphanProjectNodes: showOrphanNodes,
     })
@@ -135,6 +226,58 @@ function App() {
           <h1>ProjectExplorer</h1>
           <p className="subtitle">3D type graph from repository JSON</p>
         </div>
+        <label className="project-picker graph-file-picker">
+          Graph JSON
+          <div className="graph-file-row">
+            <select
+              value={graphSource === 'repository' ? graphFile : ''}
+              disabled={!availableGraphFiles.length || graphSource === 'local'}
+              onChange={(e) => {
+                const name = e.target.value
+                if (name) loadRepositoryGraph(name)
+              }}
+            >
+              {availableGraphFiles.map((name) => (
+                <option key={name} value={name}>
+                  repository/{name}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="browse-btn"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Browse…
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              hidden
+              onChange={async (e) => {
+                const file = e.target.files?.[0]
+                e.target.value = ''
+                if (!file) return
+                setLoading(true)
+                setError(null)
+                try {
+                  const payload = await readGraphFromJsonFile(file)
+                  applyGraphPayload(payload, 'local')
+                } catch (err) {
+                  setError(
+                    err instanceof Error ? err.message : 'Could not read file',
+                  )
+                } finally {
+                  setLoading(false)
+                }
+              }}
+            />
+          </div>
+          {graphSource === 'local' && graphFile && (
+            <span className="local-file-hint">Local: {graphFile}</span>
+          )}
+        </label>
         <label className="project-picker">
           Project
           <select
@@ -142,9 +285,7 @@ function App() {
             disabled={!projects.length}
             onChange={(e) => {
               setProject(e.target.value)
-              setSelected(null)
-              setHighlightId(null)
-              setSearchFeedback(null)
+              clearSelection()
             }}
           >
             {projects.map((name) => (
