@@ -30,23 +30,23 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
             _projectNodeMap.Add(project.Name, new());
             repository.CreateDirectory(project.Name);
 
-            foreach (var tree in compilation.SyntaxTrees)
+            foreach (var tree in compilation?.SyntaxTrees ?? [])
             {
-                var model = compilation.GetSemanticModel(tree);
+                var model = compilation?.GetSemanticModel(tree);
                 var root = await tree.GetRootAsync();
 
                 foreach (var cls in root.DescendantNodes().OfType<ClassDeclarationSyntax>())
                 {
-                    var symbol = model.GetDeclaredSymbol(cls) as INamedTypeSymbol;
-                    var parent = symbol.BaseType;                 // may be object
-                    var ifaces = symbol.Interfaces;               // direct
-                    var allIfaces = symbol.AllInterfaces;
-                    var nameSpace = symbol.ContainingNamespace.ToDisplayString();      // transitive
-                    var paths = GetSourceFiles(symbol);
+                    var symbol = model?.GetDeclaredSymbol(cls) as INamedTypeSymbol;
+                    var parent = symbol?.BaseType;                 // may be object
+                    var ifaces = symbol?.Interfaces;               // direct
+                    var allIfaces = symbol?.AllInterfaces;
+                    var nameSpace = symbol?.ContainingNamespace.ToDisplayString();      // transitive
+                    var paths = GetSourceFiles(symbol!);
                     // Walk the full chain:
-                    var childNode = CreateNode(NodeType.Leave, symbol.Name, symbol.ContainingNamespace.ToDisplayString(), paths);
+                    var childNode = CreateNode(NodeType.Leave, symbol?.Name ?? "", symbol?.ContainingNamespace.ToDisplayString() ?? "", paths);
                     _projectNodeMap[project.Name].Add(childNode.HashName);
-                    for (var t = symbol.BaseType; t != null; t = t.BaseType)
+                    for (var t = symbol?.BaseType; t != null; t = t?.BaseType)
                     {
                         if(t == null || t.Name == "Object" || t.Name == "Window")
                         {
@@ -59,7 +59,7 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                         // Console.WriteLine($"{t.BaseType}, {t.Name}, {symbol.Name}");
                     }
 
-                    foreach(var item in allIfaces)
+                    foreach(var item in allIfaces ?? [])
                     {
                         if(item == null)
                         {
@@ -72,13 +72,13 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                     }
                 }
                 var node = nodeManager.GetSerializedNodes();
-                await repository.WriteContentAsync(node, @$"{solutionName}/{project.Name}");
+                await repository.WriteContentAsync(node, @$"{solutionName}/{project.Name}Nodes");
             }
         }
 
         var relations = nodeManager.GetRelations();
-        await repository.WriteContentAsync(relations, @$"{solutionName}.sln");
-        await repository.WriteContentAsync(JsonSerializer.Serialize(_projectNodeMap, new JsonSerializerOptions{WriteIndented=true}), "ProjectsNodeIndex");
+        await repository.WriteContentAsync(relations, @$"{solutionName}/{solutionName}");
+        await repository.WriteContentAsync(JsonSerializer.Serialize(_projectNodeMap, new JsonSerializerOptions{WriteIndented=true}), @$"{solutionName}/{solutionName}.sln");
     }
 
     private TreeNode CreateNode(NodeType nodeType, string name, string nameSpace, List<string> filePaths)

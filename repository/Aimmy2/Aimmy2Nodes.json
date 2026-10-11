@@ -1,6 +1,6 @@
 {
   "09435209130fc5f7ca5ed9f32624db84": {
-    "ID": "73ee6e4c-a449-44bf-acd7-3b8ff8de0635",
+    "ID": "bec299c4-59d1-4d0a-86ee-35f914663918",
     "Type": 2,
     "HashName": "09435209130fc5f7ca5ed9f32624db84",
     "NameSpace": "Aimmy2.System",
@@ -14,7 +14,7 @@
     "FilePaths": []
   },
   "e26486f9fb3b532a75fbd7f41699ff2f": {
-    "ID": "2b1e9041-e61f-4bcb-9ded-9271616008dc",
+    "ID": "9369c67b-3b6a-4496-9ea9-8528c45e926e",
     "Type": 2,
     "HashName": "e26486f9fb3b532a75fbd7f41699ff2f",
     "NameSpace": "Aimmy2.AILogic",
@@ -28,7 +28,7 @@
     ]
   },
   "20b0d1fc3a7f7a95152423c9fcaef12c": {
-    "ID": "67a7a760-e078-464a-9247-be8c2652f43c",
+    "ID": "1b03caba-20b6-4f35-854e-da0612bef07b",
     "Type": 2,
     "HashName": "20b0d1fc3a7f7a95152423c9fcaef12c",
     "NameSpace": "Aimmy2.AILogic",
@@ -42,7 +42,7 @@
     ]
   },
   "6ca14dff3d32126de2c05de855ae92f2": {
-    "ID": "856eca66-ebf2-4f77-8a7e-ffa490fe493b",
+    "ID": "06571baf-6d7c-46ff-b82c-831169ec7a83",
     "Type": 2,
     "HashName": "6ca14dff3d32126de2c05de855ae92f2",
     "NameSpace": "Aimmy2.AILogic",
@@ -56,7 +56,7 @@
     ]
   },
   "3ae5279aefc6eaa1ca7e8234c7a104cd": {
-    "ID": "c702f617-232b-40ae-8e8f-a29bb54862b7",
+    "ID": "e1d057a0-5bda-42a1-ba57-9c4f95176652",
     "Type": 2,
     "HashName": "3ae5279aefc6eaa1ca7e8234c7a104cd",
     "NameSpace": "Aimmy2.\u003Cglobal namespace\u003E",
@@ -68,7 +68,7 @@
     "FilePaths": []
   },
   "415e2dd89f248c84b4c4c84e83d33550": {
-    "ID": "11b1f5a8-699a-4e6d-80f7-6bee7ef1d39f",
+    "ID": "65100ac8-d48d-4a98-8977-319b296a0654",
     "Type": 2,
     "HashName": "415e2dd89f248c84b4c4c84e83d33550",
     "NameSpace": "Aimmy2",
@@ -82,7 +82,7 @@
     ]
   },
   "9654e2e740b275e5bac921eff5f9f7af": {
-    "ID": "c6d42097-ed3c-4947-8631-997ce6db843b",
+    "ID": "bccc071e-0a83-44a2-8f75-a3826b53a810",
     "Type": 2,
     "HashName": "9654e2e740b275e5bac921eff5f9f7af",
     "NameSpace": "Aimmy2.System",
@@ -94,7 +94,7 @@
     "FilePaths": []
   },
   "2982b9c98da99d2d10e7602893e86061": {
-    "ID": "583df0e2-f5b8-48b2-9456-f186dee5240b",
+    "ID": "f9046d67-b2db-484b-b6a3-7c85d2472211",
     "Type": 2,
     "HashName": "2982b9c98da99d2d10e7602893e86061",
     "NameSpace": "Aimmy2.Class",
@@ -108,7 +108,7 @@
     ]
   },
   "cab5a7130f4ed1d1b9aadd81005ca59b": {
-    "ID": "71355bad-5efb-431f-b591-54f544b1c3c1",
+    "ID": "a7931bd1-9b99-43ad-b75b-e5f061641ac0",
     "Type": 2,
     "HashName": "cab5a7130f4ed1d1b9aadd81005ca59b",
     "NameSpace": "Aimmy2.System.Windows",
@@ -128,7 +128,7 @@
     "FilePaths": []
   },
   "70ade23ae1e18a74adeecdd5fc7bcabe": {
-    "ID": "153e731d-eb23-4321-bffe-9e8f9a891e51",
+    "ID": "9cc60493-a6a8-4f67-822a-a7fd0ab301f3",
     "Type": 2,
     "HashName": "70ade23ae1e18a74adeecdd5fc7bcabe",
     "NameSpace": "Aimmy2.UILibrary",
@@ -142,7 +142,7 @@
     ]
   },
   "4fc45a967f5e4620c03a353d6d4d11c2": {
-    "ID": "d0ed62e7-9c1e-40a5-97c8-6960f1babb4c",
+    "ID": "f8073725-12f9-4e73-961b-21f4523d0112",
     "Type": 2,
     "HashName": "4fc45a967f5e4620c03a353d6d4d11c2",
     "NameSpace": "Aimmy2.\u003Cglobal namespace\u003E",
@@ -161,7 +161,7 @@
     "FilePaths": []
   },
   "e212d1e8cf791118b97599dbc2bd3f34": {
-    "ID": "546f08f8-095f-4d64-a387-588637619fce",
+    "ID": "84052546-0463-4e86-8d51-df177dfeb8bc",
     "Type": 2,
     "HashName": "e212d1e8cf791118b97599dbc2bd3f34",
     "NameSpace": "Aimmy2.UILibrary",
@@ -175,7 +175,7 @@
     ]
   },
   "f466bb8644c9f182dc7c382a81cc3bae": {
-    "ID": "200e3a87-3a48-475b-bc9e-51289e92080a",
+    "ID": "262715df-80df-40be-a8ab-10ca7470c1fa",
     "Type": 2,
     "HashName": "f466bb8644c9f182dc7c382a81cc3bae",
     "NameSpace": "Aimmy2.UILibrary",
@@ -189,7 +189,7 @@
     ]
   },
   "01d8f99ec492e6f098700324bae50a3d": {
-    "ID": "2e998f0a-e89d-4947-be7e-a4ae31464395",
+    "ID": "364e9dbc-87d0-4357-b98c-3ade0fc90149",
     "Type": 2,
     "HashName": "01d8f99ec492e6f098700324bae50a3d",
     "NameSpace": "Aimmy2.UILibrary",
@@ -203,7 +203,7 @@
     ]
   },
   "6b34d8cc2c045ca85534734929538b70": {
-    "ID": "86b2d0e8-2b25-4079-9019-402220ce03b5",
+    "ID": "037de53c-e465-452b-91d3-b670db12e92e",
     "Type": 2,
     "HashName": "6b34d8cc2c045ca85534734929538b70",
     "NameSpace": "UILibrary",
@@ -217,7 +217,7 @@
     ]
   },
   "a49776d014ea60392e7e8a9cef204988": {
-    "ID": "eab72c35-2f5c-4f4c-b61b-7a0b59f05971",
+    "ID": "6f8fdbb5-6533-45b5-b9fe-49fde8d3bd2f",
     "Type": 2,
     "HashName": "a49776d014ea60392e7e8a9cef204988",
     "NameSpace": "UILibrary",
@@ -231,7 +231,7 @@
     ]
   },
   "f3027ceefa8a45f1bd1d1cfa6eeb4b92": {
-    "ID": "3e1be124-6386-4f13-90da-a08c274c60f7",
+    "ID": "46460fef-7518-4f9b-91ef-fe159079a52b",
     "Type": 2,
     "HashName": "f3027ceefa8a45f1bd1d1cfa6eeb4b92",
     "NameSpace": "Aimmy2.UILibrary",
@@ -245,7 +245,7 @@
     ]
   },
   "cc676d88a7cf17af9b3ee577c3e47757": {
-    "ID": "b9e8f5b4-da27-46a9-bb22-be4b5c00682a",
+    "ID": "abf55d80-b1b2-4f72-8b8a-86020c9d9e20",
     "Type": 2,
     "HashName": "cc676d88a7cf17af9b3ee577c3e47757",
     "NameSpace": "Aimmy2.UILibrary",
@@ -259,7 +259,7 @@
     ]
   },
   "eda2740d59e5cf7d39a24af0efa5ea4b": {
-    "ID": "6a6aecd2-21e3-498a-844c-416c732840de",
+    "ID": "f0d648ce-7b1a-4d1f-8a3d-71583a43c545",
     "Type": 2,
     "HashName": "eda2740d59e5cf7d39a24af0efa5ea4b",
     "NameSpace": "Aimmy2.UILibrary",
@@ -273,7 +273,7 @@
     ]
   },
   "f55f103f8590790a54e689ddf8877fa7": {
-    "ID": "0b0c66ea-5851-4ab7-9685-02030c1fe599",
+    "ID": "50831964-b84a-4548-9842-de842270d778",
     "Type": 2,
     "HashName": "f55f103f8590790a54e689ddf8877fa7",
     "NameSpace": "Aimmy2.UILibrary",
@@ -287,7 +287,7 @@
     ]
   },
   "696920872b1eca851513ac6622193a50": {
-    "ID": "ddc8e9b2-4235-4451-8722-6f2cb448c053",
+    "ID": "c740c787-f6a7-430d-8761-46167f319238",
     "Type": 2,
     "HashName": "696920872b1eca851513ac6622193a50",
     "NameSpace": "Aimmy2.UILibrary",
@@ -301,7 +301,7 @@
     ]
   },
   "4845402ff609469108c32467a394abaa": {
-    "ID": "7a7a4d97-8445-47fa-8bce-6b46d2f11901",
+    "ID": "a285c723-ec48-443e-bcfa-a28b40aeffe7",
     "Type": 2,
     "HashName": "4845402ff609469108c32467a394abaa",
     "NameSpace": "Aimmy2.UILibrary",
@@ -315,7 +315,7 @@
     ]
   },
   "5723819a0953afd73f6ff586660644cd": {
-    "ID": "b17448bf-6b16-481f-a2b4-28227506ab93",
+    "ID": "2f86da1f-bbb3-461c-9b7c-69f8d91fdd21",
     "Type": 2,
     "HashName": "5723819a0953afd73f6ff586660644cd",
     "NameSpace": "Aimmy2.UILibrary",
@@ -329,7 +329,7 @@
     ]
   },
   "680270b987e77cf65d4553f3fb30ce2d": {
-    "ID": "97504a74-19d7-4a09-bd12-0e8eb590617b",
+    "ID": "2543636a-889a-4a88-bce2-d82561af6515",
     "Type": 2,
     "HashName": "680270b987e77cf65d4553f3fb30ce2d",
     "NameSpace": "Aimmy2.Controls",
@@ -343,7 +343,7 @@
     ]
   },
   "47df1a0cb184bce23f78e0dadd8fe69d": {
-    "ID": "9ee59dc6-800a-4e59-b1c1-ca219da1c349",
+    "ID": "aa0e9072-6cc8-477e-8eea-91f845eb4b20",
     "Type": 2,
     "HashName": "47df1a0cb184bce23f78e0dadd8fe69d",
     "NameSpace": "Aimmy2.Controls",
@@ -357,7 +357,7 @@
     ]
   },
   "f26694d306ec09429162c289bb4c8d99": {
-    "ID": "53424b84-5423-40c6-8775-dc3b5b4d59fa",
+    "ID": "d32ea0f5-0e60-4cc7-87dd-6435ff71d0e6",
     "Type": 2,
     "HashName": "f26694d306ec09429162c289bb4c8d99",
     "NameSpace": "Aimmy2.Controls",
@@ -371,7 +371,7 @@
     ]
   },
   "2ff0f7518314a60157c7b3e895ccc73d": {
-    "ID": "1902255f-8dde-4cfb-a991-4dad7bfa248e",
+    "ID": "317f1721-5899-4569-9773-917fb3a73015",
     "Type": 2,
     "HashName": "2ff0f7518314a60157c7b3e895ccc73d",
     "NameSpace": "Aimmy2.Controls",
@@ -385,7 +385,7 @@
     ]
   },
   "3d1e5929187a615bb169240021e9be3e": {
-    "ID": "3153ef2b-0fbd-4c5f-9c5d-cee2043ea0d9",
+    "ID": "8dba7ed9-9cfb-4e9d-8ba5-58ed63a525b9",
     "Type": 2,
     "HashName": "3d1e5929187a615bb169240021e9be3e",
     "NameSpace": "Aimmy2.System.ComponentModel",
@@ -397,7 +397,7 @@
     "FilePaths": []
   },
   "cc252ed84ac2209e06cc55475fa83fd3": {
-    "ID": "83e3dc7d-de74-4ca4-bf3a-088835f35b87",
+    "ID": "c0382351-65b1-4585-80fd-8bee7c2d1368",
     "Type": 2,
     "HashName": "cc252ed84ac2209e06cc55475fa83fd3",
     "NameSpace": "Visuality",

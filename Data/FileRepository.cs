@@ -38,7 +38,7 @@ public class FileRepository
 
         Directory.CreateDirectory(_directoryPath);
 
-        var path = Path.Combine(_directoryPath, safeName);
+        var path = $"{_directoryPath}/{fileName}"; //Path.Combine(_directoryPath, safeName);
         Console.WriteLine($"Path is : {path}, {safeName}, {fileName}");
         var tempPath = path + ".tmp";
 
