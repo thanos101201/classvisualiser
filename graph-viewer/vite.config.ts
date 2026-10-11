@@ -3,6 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
 import { defineConfig, type Plugin } from 'vite'
+import { discoverBundleManifestFromFileNames } from './src/lib/discoverSolutionFolder'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 const repositoryDir = path.resolve(rootDir, '../repository')
@@ -36,28 +37,11 @@ function discoverSolutionBundles(): SolutionBundleManifest[] {
 
     const folder = entry.name
     const dir = path.join(repositoryDir, folder)
-    const relationsFile = `${folder}.json`
-    const slnFile = `${folder}.sln.json`
-
-    if (
-      !fs.existsSync(path.join(dir, relationsFile)) ||
-      !fs.existsSync(path.join(dir, slnFile))
-    ) {
-      continue
-    }
-
-    const nodeFiles = fs
-      .readdirSync(dir)
-      .filter((name) => name.endsWith('Nodes.json'))
-      .sort((a, b) => a.localeCompare(b))
-
-    bundles.push({
-      solutionName: folder,
+    const manifest = discoverBundleManifestFromFileNames(
       folder,
-      relationsFile,
-      slnFile,
-      nodeFiles,
-    })
+      fs.readdirSync(dir),
+    )
+    if (manifest) bundles.push(manifest)
   }
 
   return bundles.sort((a, b) => a.folder.localeCompare(b.folder))
@@ -113,8 +97,13 @@ function repositoryPlugin(): Plugin {
       })
     },
     closeBundle() {
-      const outDir = path.resolve(rootDir, 'dist/repository')
+      const distDir = path.resolve(rootDir, 'dist')
+      const outDir = path.join(distDir, 'repository')
       fs.mkdirSync(outDir, { recursive: true })
+      fs.writeFileSync(
+        path.join(distDir, 'solution-bundles.json'),
+        JSON.stringify(discoverSolutionBundles(), null, 2),
+      )
       if (!fs.existsSync(repositoryDir)) return
 
       for (const name of fs.readdirSync(repositoryDir)) {

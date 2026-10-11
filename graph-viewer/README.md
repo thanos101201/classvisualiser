@@ -12,7 +12,7 @@ Files live under `repository/{SolutionName}/` and are joined on **HashName**:
 | `{Solution}.sln.json` | **Project index** — project name → list of class hashes in that project |
 | `{Project}Nodes.json` | **Metadata** — hash → `TreeNode` (`Name`, `NameSpace`, `FilePaths`, …) |
 
-Example for Aimmy:
+Example for Aimmy (names follow the **solution** and **project** from the analyzer):
 
 ```
 repository/Aimmy2/
@@ -20,6 +20,20 @@ repository/Aimmy2/
   Aimmy2.sln.json      ← which hashes belong to project "Aimmy2"
   Aimmy2Nodes.json     ← class names and source paths for those hashes
 ```
+
+### Other solutions / names
+
+Yes — any export with the **same shapes** works. Names only need to follow these rules:
+
+| Role | Filename pattern | Example |
+|------|------------------|---------|
+| Relations | `{Name}.json` (not `*.sln.json` or `*Nodes.json`) | `WidgetSuite.json` |
+| Project index | `{Name}.sln.json` | `WidgetSuite.sln.json` |
+| Node metadata | `{ProjectName}Nodes.json` (one per project) | `WebAppNodes.json`, `CoreLibNodes.json` |
+
+Put them in `repository/{any-folder}/`. The folder name does **not** have to match `{Name}`; discovery picks the relations + `.sln.json` pair (preferring `{folder}.json` / `{folder}.sln.json` when present).
+
+**Browse…** accepts any names as long as you select one relations JSON, one `.sln.json`, and any `*Nodes.json` files together.
 
 **How they bind:**
 

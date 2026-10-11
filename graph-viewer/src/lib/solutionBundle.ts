@@ -53,21 +53,12 @@ export async function listSolutionBundles(
     /* preview / static hosting */
   }
 
-  const folder = 'Aimmy2'
-  const probe = await fetch(`${repoBase}/${folder}/${folder}.json`, {
-    method: 'HEAD',
-  })
-  if (probe.ok) {
-    return [
-      {
-        solutionName: folder,
-        folder,
-        relationsFile: `${folder}.json`,
-        slnFile: `${folder}.sln.json`,
-        nodeFiles: [`${folder}Nodes.json`],
-      },
-    ]
+  const siteBase = repoBase.replace(/\/repository\/?$/i, '')
+  const manifestRes = await fetch(`${siteBase}/solution-bundles.json`)
+  if (manifestRes.ok) {
+    return (await manifestRes.json()) as SolutionBundleManifest[]
   }
+
   return []
 }
 
