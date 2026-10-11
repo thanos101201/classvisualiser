@@ -18,19 +18,72 @@ function isGraphRelationsFile(name: string): boolean {
   )
 }
 
+type SolutionBundleManifest = {
+  solutionName: string
+  folder: string
+  relationsFile: string
+  slnFile: string
+  nodeFiles: string[]
+}
+
+function discoverSolutionBundles(): SolutionBundleManifest[] {
+  if (!fs.existsSync(repositoryDir)) return []
+
+  const bundles: SolutionBundleManifest[] = []
+
+  for (const entry of fs.readdirSync(repositoryDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue
+
+    const folder = entry.name
+    const dir = path.join(repositoryDir, folder)
+    const relationsFile = `${folder}.json`
+    const slnFile = `${folder}.sln.json`
+
+    if (
+      !fs.existsSync(path.join(dir, relationsFile)) ||
+      !fs.existsSync(path.join(dir, slnFile))
+    ) {
+      continue
+    }
+
+    const nodeFiles = fs
+      .readdirSync(dir)
+      .filter((name) => name.endsWith('Nodes.json'))
+      .sort((a, b) => a.localeCompare(b))
+
+    bundles.push({
+      solutionName: folder,
+      folder,
+      relationsFile,
+      slnFile,
+      nodeFiles,
+    })
+  }
+
+  return bundles.sort((a, b) => a.folder.localeCompare(b.folder))
+}
+
 function repositoryPlugin(): Plugin {
   return {
     name: 'project-explorer-repository',
     configureServer(server) {
+      server.middlewares.use('/api/repository/solution-bundles', (_req, res) => {
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify(discoverSolutionBundles()))
+      })
+
       server.middlewares.use('/api/repository/graph-files', (_req, res) => {
-        const files = fs.existsSync(repositoryDir)
+        const nested = discoverSolutionBundles().map(
+          (b) => `${b.folder}/${b.relationsFile}`,
+        )
+        const rootFiles = fs.existsSync(repositoryDir)
           ? fs
               .readdirSync(repositoryDir)
               .filter(isGraphRelationsFile)
               .sort((a, b) => a.localeCompare(b))
           : []
         res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify(files))
+        res.end(JSON.stringify([...nested, ...rootFiles]))
       })
 
       server.middlewares.use('/repository', (req, res, next) => {

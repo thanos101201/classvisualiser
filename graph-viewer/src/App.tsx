@@ -7,16 +7,15 @@ import {
   type FormEvent,
 } from 'react'
 import { GraphViewer3D } from './components/GraphViewer3D'
-import {
-  buildGraphData,
-  listProjects,
-  listRepositoryGraphFiles,
-  loadGraphRelations,
-  loadProjectNodeStore,
-  loadProjectsIndex,
-} from './lib/buildGraphData'
+import { buildGraphData, listProjects } from './lib/buildGraphData'
 import { readGraphFromJsonFile } from './lib/loadGraphFromFile'
+import { loadSolutionFromBrowsedFiles } from './lib/loadSolutionFromFiles'
 import { findNodeByHash } from './lib/findNodeByHash'
+import {
+  listSolutionBundles,
+  loadSolutionBundle,
+  type SolutionBundleManifest,
+} from './lib/solutionBundle'
 import type {
   GraphNode,
   NodeStore,
@@ -35,14 +34,17 @@ function App() {
   )
   const [relations, setRelations] = useState<RelationsMap | null>(null)
   const [nodeStore, setNodeStore] = useState<NodeStore | null>(null)
-  const [graphFile, setGraphFile] = useState<string>('')
+  const [bundleLabel, setBundleLabel] = useState<string>('')
   const [project, setProject] = useState<string>('')
   const [selected, setSelected] = useState<GraphNode | null>(null)
   const [hashQuery, setHashQuery] = useState('')
   const [highlightId, setHighlightId] = useState<string | null>(null)
   const [searchFeedback, setSearchFeedback] = useState<string | null>(null)
   const [showOrphanNodes, setShowOrphanNodes] = useState(false)
-  const [availableGraphFiles, setAvailableGraphFiles] = useState<string[]>([])
+  const [solutionBundles, setSolutionBundles] = useState<
+    SolutionBundleManifest[]
+  >([])
+  const [activeBundleFolder, setActiveBundleFolder] = useState<string>('')
   const [graphSource, setGraphSource] = useState<'repository' | 'local'>(
     'repository',
   )
@@ -54,19 +56,25 @@ function App() {
     setSearchFeedback(null)
   }, [])
 
-  const applyGraphPayload = useCallback(
+  const applySolution = useCallback(
     (
-      payload: {
+      data: {
         relations: RelationsMap
-        nodeStore: NodeStore | null
-        fileName: string
+        projectsIndex: ProjectsNodeIndex
+        nodeStore: NodeStore
+        label: string
       },
       source: 'repository' | 'local',
     ) => {
-      setRelations(payload.relations)
-      setNodeStore(payload.nodeStore)
-      setGraphFile(payload.fileName)
+      setRelations(data.relations)
+      setProjectsIndex(data.projectsIndex)
+      setNodeStore(data.nodeStore)
+      setBundleLabel(data.label)
       setGraphSource(source)
+      const projects = listProjects(data.projectsIndex)
+      setProject((prev) =>
+        prev && projects.includes(prev) ? prev : (projects[0] ?? ''),
+      )
       clearSelection()
     },
     [clearSelection],
@@ -76,42 +84,29 @@ function App() {
     let cancelled = false
     ;(async () => {
       try {
-        const [projectsIndex, graphFiles] = await Promise.all([
-          loadProjectsIndex(REPO_BASE),
-          listRepositoryGraphFiles(REPO_BASE),
-        ])
+        const bundles = await listSolutionBundles(REPO_BASE)
         if (cancelled) return
 
-        setProjectsIndex(projectsIndex)
-        setAvailableGraphFiles(graphFiles)
+        setSolutionBundles(bundles)
 
-        const projects = listProjects(projectsIndex)
-        const defaultProject = projects[0] ?? ''
-        setProject(defaultProject)
-
-        const initialFile =
-          graphFiles.find(
-            (f) => f.replace(/\.json$/i, '') === defaultProject,
-          ) ?? graphFiles[0]
-
-        if (!initialFile) {
+        if (!bundles.length) {
           setError(
-            'No graph JSON in repository/ (e.g. Aimmy2.json). Use Browse to open a file.',
+            'No solution folder in repository/ (expected e.g. Aimmy2/Aimmy2.json + Aimmy2.sln.json). Use Browse to load files.',
           )
           return
         }
 
-        const graph = await loadGraphRelations(REPO_BASE, initialFile)
-        const optionalNodes = defaultProject
-          ? await loadProjectNodeStore(REPO_BASE, defaultProject)
-          : null
+        const initial = bundles[0]
+        setActiveBundleFolder(initial.folder)
+        const bundle = await loadSolutionBundle(REPO_BASE, initial)
         if (cancelled) return
 
-        applyGraphPayload(
+        applySolution(
           {
-            relations: graph.relations,
-            nodeStore: optionalNodes ?? graph.nodeStore,
-            fileName: initialFile,
+            relations: bundle.relations,
+            projectsIndex: bundle.projectsIndex,
+            nodeStore: bundle.nodeStore,
+            label: `${initial.folder}/`,
           },
           'repository',
         )
@@ -126,47 +121,35 @@ function App() {
     return () => {
       cancelled = true
     }
-  }, [applyGraphPayload])
+  }, [applySolution])
 
-  const loadRepositoryGraph = useCallback(
-    async (fileName: string) => {
+  const loadRepositoryBundle = useCallback(
+    async (folder: string) => {
+      const manifest = solutionBundles.find((b) => b.folder === folder)
+      if (!manifest) return
+
       setLoading(true)
       setError(null)
+      setActiveBundleFolder(folder)
       try {
-        const graph = await loadGraphRelations(REPO_BASE, fileName)
-        const optionalNodes = project
-          ? await loadProjectNodeStore(REPO_BASE, project)
-          : null
-        applyGraphPayload(
+        const bundle = await loadSolutionBundle(REPO_BASE, manifest)
+        applySolution(
           {
-            relations: graph.relations,
-            nodeStore: optionalNodes ?? graph.nodeStore,
-            fileName,
+            relations: bundle.relations,
+            projectsIndex: bundle.projectsIndex,
+            nodeStore: bundle.nodeStore,
+            label: `${folder}/`,
           },
           'repository',
         )
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load graph file')
+        setError(e instanceof Error ? e.message : 'Failed to load solution')
       } finally {
         setLoading(false)
       }
     },
-    [applyGraphPayload, project],
+    [applySolution, solutionBundles],
   )
-
-  useEffect(() => {
-    if (!project) return
-    let cancelled = false
-    ;(async () => {
-      const store = await loadProjectNodeStore(REPO_BASE, project)
-      if (!cancelled) {
-        setNodeStore((prev) => store ?? prev)
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [project])
 
   const graphData = useMemo(() => {
     if (!relations) {
@@ -224,28 +207,33 @@ function App() {
       <header className="toolbar">
         <div className="toolbar-title">
           <h1>ProjectExplorer</h1>
-          <p className="subtitle">3D type graph from repository JSON</p>
+          <p className="subtitle">
+            Solution bundle: relations + project index + node metadata
+          </p>
         </div>
         <label className="project-picker graph-file-picker">
-          Graph JSON
+          Solution
           <div className="graph-file-row">
             <select
-              value={graphSource === 'repository' ? graphFile : ''}
-              disabled={!availableGraphFiles.length || graphSource === 'local'}
+              value={
+                graphSource === 'repository' ? activeBundleFolder : ''
+              }
+              disabled={!solutionBundles.length || graphSource === 'local'}
               onChange={(e) => {
-                const name = e.target.value
-                if (name) loadRepositoryGraph(name)
+                const folder = e.target.value
+                if (folder) loadRepositoryBundle(folder)
               }}
             >
-              {availableGraphFiles.map((name) => (
-                <option key={name} value={name}>
-                  repository/{name}
+              {solutionBundles.map((b) => (
+                <option key={b.folder} value={b.folder}>
+                  repository/{b.folder}/
                 </option>
               ))}
             </select>
             <button
               type="button"
               className="browse-btn"
+              title="Select Aimmy2.json, Aimmy2.sln.json, and *Nodes.json together"
               onClick={() => fileInputRef.current?.click()}
             >
               Browse…
@@ -254,19 +242,42 @@ function App() {
               ref={fileInputRef}
               type="file"
               accept=".json,application/json"
+              multiple
               hidden
               onChange={async (e) => {
-                const file = e.target.files?.[0]
+                const picked = [...(e.target.files ?? [])]
                 e.target.value = ''
-                if (!file) return
+                if (!picked.length) return
+
                 setLoading(true)
                 setError(null)
                 try {
-                  const payload = await readGraphFromJsonFile(file)
-                  applyGraphPayload(payload, 'local')
+                  if (picked.length >= 2) {
+                    const bundle = await loadSolutionFromBrowsedFiles(picked)
+                    applySolution(
+                      {
+                        relations: bundle.relations,
+                        projectsIndex: bundle.projectsIndex,
+                        nodeStore: bundle.nodeStore,
+                        label: bundle.manifest.solutionName,
+                      },
+                      'local',
+                    )
+                  } else {
+                    const payload = await readGraphFromJsonFile(picked[0])
+                    applySolution(
+                      {
+                        relations: payload.relations,
+                        projectsIndex: {},
+                        nodeStore: payload.nodeStore ?? {},
+                        label: payload.fileName,
+                      },
+                      'local',
+                    )
+                  }
                 } catch (err) {
                   setError(
-                    err instanceof Error ? err.message : 'Could not read file',
+                    err instanceof Error ? err.message : 'Could not read files',
                   )
                 } finally {
                   setLoading(false)
@@ -274,8 +285,8 @@ function App() {
               }}
             />
           </div>
-          {graphSource === 'local' && graphFile && (
-            <span className="local-file-hint">Local: {graphFile}</span>
+          {graphSource === 'local' && bundleLabel && (
+            <span className="local-file-hint">Local: {bundleLabel}</span>
           )}
         </label>
         <label className="project-picker">
@@ -301,8 +312,7 @@ function App() {
             checked={showOrphanNodes}
             onChange={(e) => {
               setShowOrphanNodes(e.target.checked)
-              setSelected(null)
-              setHighlightId(null)
+              clearSelection()
             }}
           />
           Show classes without edges
@@ -330,7 +340,7 @@ function App() {
           </p>
         )}
         <div className="stats">
-          {graphFile && <span className="graph-file">{graphFile}</span>}
+          {bundleLabel && <span className="graph-file">{bundleLabel}</span>}
           <span>{graphData.nodes.length} nodes</span>
           <span>{graphData.links.length} edges</span>
         </div>
@@ -375,12 +385,6 @@ function App() {
                     ))}
                   </ul>
                 </div>
-              )}
-              {!selected.nameSpace && (
-                <p className="hint">
-                  Class names appear when TreeNode metadata is exported to{' '}
-                  <code>repository/{project}/nodes.json</code>.
-                </p>
               )}
             </>
           ) : (

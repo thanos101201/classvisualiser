@@ -1,23 +1,33 @@
 # ProjectExplorer — 3D graph viewer
 
-React app that visualizes the **TreeNode** graph written by ProjectExplorer under [`../repository/`](../repository/).
+React app that visualizes **TreeNode** graphs exported by ProjectExplorer.
 
-## Data layout
+## Solution bundle (three JSON files)
 
-| File | Purpose |
-|------|---------|
-| `repository/ProjectsNodeIndex.json` | Project → node `HashName` list |
-| `repository/{Solution}.json` | Parent hash → child hashes (e.g. `Aimmy2.json`) |
-| `repository/{Project}/nodes.json` | Optional hash → `TreeNode` metadata |
+Files live under `repository/{SolutionName}/` and are joined on **HashName**:
 
-The dev server reads JSON directly from `../repository` (no copy step). Production builds copy `.json` files into `dist/repository`.
+| File | Role |
+|------|------|
+| `{Solution}.json` | **Edges** — parent hash → child hashes (inheritance / interfaces) |
+| `{Solution}.sln.json` | **Project index** — project name → list of class hashes in that project |
+| `{Project}Nodes.json` | **Metadata** — hash → `TreeNode` (`Name`, `NameSpace`, `FilePaths`, …) |
 
-The graph draws **only nodes that appear in the relations JSON** (as a parent key or child hash). `ProjectsNodeIndex.json` lists every class in a project from analysis; many of those may not appear in a partial `Aimmy2.json`. Use **Show classes without edges** in the UI to include index-only classes as isolated nodes.
+Example for Aimmy:
 
-### Choosing a graph file
+```
+repository/Aimmy2/
+  Aimmy2.json          ← hierarchy (edges)
+  Aimmy2.sln.json      ← which hashes belong to project "Aimmy2"
+  Aimmy2Nodes.json     ← class names and source paths for those hashes
+```
 
-- **Graph JSON** dropdown — lists relation files in `repository/` (e.g. `Aimmy2.json`). Changing the selection reloads and re-renders the graph.
-- **Browse…** — open any `.json` on your machine (relations map or TreeNode `nodes.json`). Local files are not copied into `repository/`.
+**How they bind:**
+
+1. Load `Aimmy2.json` → build graph **links** between hashes.
+2. Load `Aimmy2.sln.json` → **Project** dropdown filters which hashes can be shown (optional orphans via checkbox).
+3. Load `Aimmy2Nodes.json` (and any other `*Nodes.json` in the folder) → **labels** and detail panel text for each hash.
+
+Multi-project solutions add more entries in `.sln.json` and one `{ProjectName}Nodes.json` per project; all node files are merged into one lookup map.
 
 ## Run
 
@@ -27,6 +37,6 @@ npm install
 npm run dev
 ```
 
-Open the URL from the terminal (typically `http://localhost:5173`).
+Use the **Solution** dropdown for folders under `repository/`, or **Browse…** and select `Aimmy2.json`, `Aimmy2.sln.json`, and `Aimmy2Nodes.json` together (multi-select).
 
-After re-running the .NET analyzer, refresh the browser to pick up updated JSON.
+By default only hashes that appear in `{Solution}.json` are drawn. Enable **Show classes without edges** to include index-only classes from `.sln.json`.
