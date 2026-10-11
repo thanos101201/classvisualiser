@@ -7,6 +7,7 @@ import {
   type FormEvent,
 } from 'react'
 import { GraphViewer3D } from './components/GraphViewer3D'
+import { NodeDetailPanel } from './components/NodeDetailPanel'
 import { buildGraphData, listProjects } from './lib/buildGraphData'
 import { readGraphFromJsonFile } from './lib/loadGraphFromFile'
 import { loadSolutionFromBrowsedFiles } from './lib/loadSolutionFromFiles'
@@ -167,11 +168,39 @@ function App() {
     [projectsIndex],
   )
 
-  const handleNodeClick = useCallback((node: GraphNode | null) => {
-    setSelected(node)
-    setHighlightId(node?.id ?? null)
-    if (node) setHashQuery(node.id)
-  }, [])
+  const focusNode = useCallback((hash: string) => {
+    const graphNode = graphData.nodes.find((n) => n.id === hash)
+    if (graphNode) {
+      setSelected(graphNode)
+      setHighlightId(hash)
+      setHashQuery(hash)
+      setSearchFeedback(null)
+      return
+    }
+    const meta = nodeStore?.[hash]
+    setSelected({
+      id: hash,
+      label: meta?.Name ?? hash.slice(0, 8),
+      nameSpace: meta?.NameSpace,
+      filePaths: meta?.FilePaths,
+      type: meta?.Type,
+      val: 1,
+    })
+    setHighlightId(hash)
+    setHashQuery(hash)
+  }, [graphData.nodes, nodeStore])
+
+  const handleNodeClick = useCallback(
+    (node: GraphNode | null) => {
+      if (!node) {
+        setSelected(null)
+        setHighlightId(null)
+        return
+      }
+      focusNode(node.id)
+    },
+    [focusNode],
+  )
 
   const handleHashSearch = useCallback(
     (e: FormEvent) => {
@@ -183,9 +212,7 @@ function App() {
           setSearchFeedback(null)
           break
         case 'found':
-          setHighlightId(result.node.id)
-          setSelected(result.node)
-          setSearchFeedback(null)
+          focusNode(result.node.id)
           break
         case 'not_found':
           setHighlightId(null)
@@ -199,7 +226,7 @@ function App() {
           break
       }
     },
-    [graphData.nodes, hashQuery],
+    [graphData.nodes, hashQuery, focusNode],
   )
 
   return (
@@ -360,36 +387,21 @@ function App() {
 
         <aside className={`detail-panel ${selected ? 'open' : ''}`}>
           {selected ? (
-            <>
-              <button
-                type="button"
-                className="close-btn"
-                onClick={() => setSelected(null)}
-                aria-label="Close"
-              >
-                ×
-              </button>
-              <h2>{selected.label}</h2>
-              {selected.nameSpace && (
-                <p className="mono block">{selected.nameSpace}</p>
-              )}
-              <p className="mono block muted">{selected.id}</p>
-              {selected.filePaths && selected.filePaths.length > 0 && (
-                <div className="files">
-                  <h3>Source</h3>
-                  <ul>
-                    {selected.filePaths.map((path) => (
-                      <li key={path} className="mono">
-                        {path}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </>
+            <NodeDetailPanel
+              selected={selected}
+              nodeStore={nodeStore}
+              graphData={graphData}
+              projectsIndex={projectsIndex}
+              onNavigate={focusNode}
+              onClose={() => {
+                setSelected(null)
+                setHighlightId(null)
+              }}
+            />
           ) : (
             <p className="hint panel-idle">
-              Click a node to inspect it. Drag to orbit, scroll to zoom.
+              Click a node for class details, parents, children, and source
+              paths. Drag to orbit, scroll to zoom.
             </p>
           )}
         </aside>
