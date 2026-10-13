@@ -13,39 +13,12 @@ The pipeline has two parts:
 
 ## Screenshots
 
-Add your own images under [`docs/screenshots/`](docs/screenshots/). Suggested filenames are used below; until you add files, viewers may show broken image links—that is expected.
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/68fc49f9-ebea-45f1-bdb4-ff5cbf5bcb0b" />
 
 ### Analyzer / repository output
 
-![Repository folder layout after analysis](docs/screenshots/01-repository-folder.png)
-
 *Example: `repository/Aimmy2/` with `Aimmy2.json`, `Aimmy2.sln.json`, and `Aimmy2Nodes.json`.*
 
-### 3D graph overview
-
-![3D graph of type relationships](docs/screenshots/02-graph-overview.png)
-
-*Full solution graph: nodes are types (by hash), edges are inheritance / interface links.*
-
-### Node details panel
-
-![Detail panel after clicking a node](docs/screenshots/03-node-details.png)
-
-*Class name, namespace, parents, children, and source file paths from `*Nodes.json`.*
-
-### Search and highlight
-
-![Hash search highlighting a node](docs/screenshots/04-hash-search.png)
-
-*Find a type by full or partial `HashName` and fly the camera to it.*
-
-### Solution / project controls
-
-![Toolbar with solution and project pickers](docs/screenshots/05-toolbar.png)
-
-*Switch solution bundles, filter by project, optional orphan classes.*
-
----
 
 ## What problem this solves
 
