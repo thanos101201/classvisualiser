@@ -293,4 +293,5 @@ Add your license and contribution notes here if this repo is shared publicly.
 ## See also
 
 - [Graph viewer README](graph-viewer/README.md) — bundle naming, browse mode, npm scripts
+- [Method call graph plan](docs/METHOD_CALL_GRAPH_PLAN.md) — method metadata, on-demand source, invocation navigation
 - [Screenshots folder](docs/screenshots/README.md) — suggested image names for the gallery above

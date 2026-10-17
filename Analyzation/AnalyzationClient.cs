@@ -19,7 +19,7 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
         var solution = await workspace.OpenSolutionAsync(slnPath);
         var solutionName = Path.GetFileNameWithoutExtension(solution.FilePath);
 
-        foreach (var project in solution.Projects)
+        foreach (var project in solution.Projects)  
         {
             // if (repository.CheckFileExistence(project.Name))
             // {
