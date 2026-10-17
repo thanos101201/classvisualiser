@@ -1,0 +1,413 @@
+{
+  "09435209130fc5f7ca5ed9f32624db84": {
+    "ID": "bec299c4-59d1-4d0a-86ee-35f914663918",
+    "Type": 2,
+    "HashName": "09435209130fc5f7ca5ed9f32624db84",
+    "NameSpace": "Aimmy2.System",
+    "Name": "IDisposable",
+    "Children": [
+      "e26486f9fb3b532a75fbd7f41699ff2f",
+      "20b0d1fc3a7f7a95152423c9fcaef12c",
+      "6ca14dff3d32126de2c05de855ae92f2"
+    ],
+    "Parents": [],
+    "FilePaths": []
+  },
+  "e26486f9fb3b532a75fbd7f41699ff2f": {
+    "ID": "9369c67b-3b6a-4496-9ea9-8528c45e926e",
+    "Type": 2,
+    "HashName": "e26486f9fb3b532a75fbd7f41699ff2f",
+    "NameSpace": "Aimmy2.AILogic",
+    "Name": "AIManager",
+    "Children": [],
+    "Parents": [
+      "09435209130fc5f7ca5ed9f32624db84"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/AILogic/AIManager.cs"
+    ]
+  },
+  "20b0d1fc3a7f7a95152423c9fcaef12c": {
+    "ID": "1b03caba-20b6-4f35-854e-da0612bef07b",
+    "Type": 2,
+    "HashName": "20b0d1fc3a7f7a95152423c9fcaef12c",
+    "NameSpace": "Aimmy2.AILogic",
+    "Name": "BenchmarkScope",
+    "Children": [],
+    "Parents": [
+      "09435209130fc5f7ca5ed9f32624db84"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/AILogic/AIManager.cs"
+    ]
+  },
+  "6ca14dff3d32126de2c05de855ae92f2": {
+    "ID": "06571baf-6d7c-46ff-b82c-831169ec7a83",
+    "Type": 2,
+    "HashName": "6ca14dff3d32126de2c05de855ae92f2",
+    "NameSpace": "Aimmy2.AILogic",
+    "Name": "ResourceUsageSampler",
+    "Children": [],
+    "Parents": [
+      "09435209130fc5f7ca5ed9f32624db84"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/AILogic/PerformanceBenchmark.cs"
+    ]
+  },
+  "3ae5279aefc6eaa1ca7e8234c7a104cd": {
+    "ID": "e1d057a0-5bda-42a1-ba57-9c4f95176652",
+    "Type": 2,
+    "HashName": "3ae5279aefc6eaa1ca7e8234c7a104cd",
+    "NameSpace": "Aimmy2.\u003Cglobal namespace\u003E",
+    "Name": "Application",
+    "Children": [
+      "415e2dd89f248c84b4c4c84e83d33550"
+    ],
+    "Parents": [],
+    "FilePaths": []
+  },
+  "415e2dd89f248c84b4c4c84e83d33550": {
+    "ID": "65100ac8-d48d-4a98-8977-319b296a0654",
+    "Type": 2,
+    "HashName": "415e2dd89f248c84b4c4c84e83d33550",
+    "NameSpace": "Aimmy2",
+    "Name": "App",
+    "Children": [],
+    "Parents": [
+      "3ae5279aefc6eaa1ca7e8234c7a104cd"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/App.xaml.cs"
+    ]
+  },
+  "9654e2e740b275e5bac921eff5f9f7af": {
+    "ID": "bccc071e-0a83-44a2-8f75-a3826b53a810",
+    "Type": 2,
+    "HashName": "9654e2e740b275e5bac921eff5f9f7af",
+    "NameSpace": "Aimmy2.System",
+    "Name": "EventArgs",
+    "Children": [
+      "2982b9c98da99d2d10e7602893e86061"
+    ],
+    "Parents": [],
+    "FilePaths": []
+  },
+  "2982b9c98da99d2d10e7602893e86061": {
+    "ID": "f9046d67-b2db-484b-b6a3-7c85d2472211",
+    "Type": 2,
+    "HashName": "2982b9c98da99d2d10e7602893e86061",
+    "NameSpace": "Aimmy2.Class",
+    "Name": "DisplayChangedEventArgs",
+    "Children": [],
+    "Parents": [
+      "9654e2e740b275e5bac921eff5f9f7af"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/Other/DisplayManager.cs"
+    ]
+  },
+  "cab5a7130f4ed1d1b9aadd81005ca59b": {
+    "ID": "a7931bd1-9b99-43ad-b75b-e5f061641ac0",
+    "Type": 2,
+    "HashName": "cab5a7130f4ed1d1b9aadd81005ca59b",
+    "NameSpace": "Aimmy2.System.Windows",
+    "Name": "UserControl",
+    "Children": [
+      "70ade23ae1e18a74adeecdd5fc7bcabe",
+      "6b34d8cc2c045ca85534734929538b70",
+      "a49776d014ea60392e7e8a9cef204988",
+      "f3027ceefa8a45f1bd1d1cfa6eeb4b92",
+      "cc676d88a7cf17af9b3ee577c3e47757",
+      "eda2740d59e5cf7d39a24af0efa5ea4b",
+      "696920872b1eca851513ac6622193a50",
+      "4845402ff609469108c32467a394abaa",
+      "5723819a0953afd73f6ff586660644cd"
+    ],
+    "Parents": [],
+    "FilePaths": []
+  },
+  "70ade23ae1e18a74adeecdd5fc7bcabe": {
+    "ID": "9cc60493-a6a8-4f67-822a-a7fd0ab301f3",
+    "Type": 2,
+    "HashName": "70ade23ae1e18a74adeecdd5fc7bcabe",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "AColorChanger",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/AColorChanger.xaml.cs"
+    ]
+  },
+  "4fc45a967f5e4620c03a353d6d4d11c2": {
+    "ID": "f8073725-12f9-4e73-961b-21f4523d0112",
+    "Type": 2,
+    "HashName": "4fc45a967f5e4620c03a353d6d4d11c2",
+    "NameSpace": "Aimmy2.\u003Cglobal namespace\u003E",
+    "Name": "UserControl",
+    "Children": [
+      "e212d1e8cf791118b97599dbc2bd3f34",
+      "f466bb8644c9f182dc7c382a81cc3bae",
+      "01d8f99ec492e6f098700324bae50a3d",
+      "f55f103f8590790a54e689ddf8877fa7",
+      "680270b987e77cf65d4553f3fb30ce2d",
+      "47df1a0cb184bce23f78e0dadd8fe69d",
+      "f26694d306ec09429162c289bb4c8d99",
+      "2ff0f7518314a60157c7b3e895ccc73d"
+    ],
+    "Parents": [],
+    "FilePaths": []
+  },
+  "e212d1e8cf791118b97599dbc2bd3f34": {
+    "ID": "84052546-0463-4e86-8d51-df177dfeb8bc",
+    "Type": 2,
+    "HashName": "e212d1e8cf791118b97599dbc2bd3f34",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "AColorWheel",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/AColorWheel.xaml.cs"
+    ]
+  },
+  "f466bb8644c9f182dc7c382a81cc3bae": {
+    "ID": "262715df-80df-40be-a8ab-10ca7470c1fa",
+    "Type": 2,
+    "HashName": "f466bb8644c9f182dc7c382a81cc3bae",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ADisplaySelector",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/ADisplaySelector.xaml.cs"
+    ]
+  },
+  "01d8f99ec492e6f098700324bae50a3d": {
+    "ID": "364e9dbc-87d0-4357-b98c-3ade0fc90149",
+    "Type": 2,
+    "HashName": "01d8f99ec492e6f098700324bae50a3d",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ADownloadGateway",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/ADownloadGateway.xaml.cs"
+    ]
+  },
+  "6b34d8cc2c045ca85534734929538b70": {
+    "ID": "037de53c-e465-452b-91d3-b670db12e92e",
+    "Type": 2,
+    "HashName": "6b34d8cc2c045ca85534734929538b70",
+    "NameSpace": "UILibrary",
+    "Name": "ADropdown",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/ADropdown.xaml.cs"
+    ]
+  },
+  "a49776d014ea60392e7e8a9cef204988": {
+    "ID": "6f8fdbb5-6533-45b5-b9fe-49fde8d3bd2f",
+    "Type": 2,
+    "HashName": "a49776d014ea60392e7e8a9cef204988",
+    "NameSpace": "UILibrary",
+    "Name": "AFileLocator",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/AFileLocator.xaml.cs"
+    ]
+  },
+  "f3027ceefa8a45f1bd1d1cfa6eeb4b92": {
+    "ID": "46460fef-7518-4f9b-91ef-fe159079a52b",
+    "Type": 2,
+    "HashName": "f3027ceefa8a45f1bd1d1cfa6eeb4b92",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "AKeyChanger",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/AKeyChanger.xaml.cs"
+    ]
+  },
+  "cc676d88a7cf17af9b3ee577c3e47757": {
+    "ID": "abf55d80-b1b2-4f72-8b8a-86020c9d9e20",
+    "Type": 2,
+    "HashName": "cc676d88a7cf17af9b3ee577c3e47757",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "APButton",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/APButton.xaml.cs"
+    ]
+  },
+  "eda2740d59e5cf7d39a24af0efa5ea4b": {
+    "ID": "f0d648ce-7b1a-4d1f-8a3d-71583a43c545",
+    "Type": 2,
+    "HashName": "eda2740d59e5cf7d39a24af0efa5ea4b",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ARectangleBottom",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/ARectangleBottom.xaml.cs"
+    ]
+  },
+  "f55f103f8590790a54e689ddf8877fa7": {
+    "ID": "50831964-b84a-4548-9842-de842270d778",
+    "Type": 2,
+    "HashName": "f55f103f8590790a54e689ddf8877fa7",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ASlider",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/ASlider.xaml.cs"
+    ]
+  },
+  "696920872b1eca851513ac6622193a50": {
+    "ID": "c740c787-f6a7-430d-8761-46167f319238",
+    "Type": 2,
+    "HashName": "696920872b1eca851513ac6622193a50",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ASpacer",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/ASpacer.xaml.cs"
+    ]
+  },
+  "4845402ff609469108c32467a394abaa": {
+    "ID": "a285c723-ec48-443e-bcfa-a28b40aeffe7",
+    "Type": 2,
+    "HashName": "4845402ff609469108c32467a394abaa",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "ATitle",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/ATitle.xaml.cs"
+    ]
+  },
+  "5723819a0953afd73f6ff586660644cd": {
+    "ID": "2f86da1f-bbb3-461c-9b7c-69f8d91fdd21",
+    "Type": 2,
+    "HashName": "5723819a0953afd73f6ff586660644cd",
+    "NameSpace": "Aimmy2.UILibrary",
+    "Name": "AToggle",
+    "Children": [],
+    "Parents": [
+      "cab5a7130f4ed1d1b9aadd81005ca59b"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UILibrary/AToggle.xaml.cs"
+    ]
+  },
+  "680270b987e77cf65d4553f3fb30ce2d": {
+    "ID": "2543636a-889a-4a88-bce2-d82561af6515",
+    "Type": 2,
+    "HashName": "680270b987e77cf65d4553f3fb30ce2d",
+    "NameSpace": "Aimmy2.Controls",
+    "Name": "AboutMenuControl",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UISections/AboutMenuControl.xaml.cs"
+    ]
+  },
+  "47df1a0cb184bce23f78e0dadd8fe69d": {
+    "ID": "aa0e9072-6cc8-477e-8eea-91f845eb4b20",
+    "Type": 2,
+    "HashName": "47df1a0cb184bce23f78e0dadd8fe69d",
+    "NameSpace": "Aimmy2.Controls",
+    "Name": "AimMenuControl",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UISections/AimMenuControl.xaml.cs"
+    ]
+  },
+  "f26694d306ec09429162c289bb4c8d99": {
+    "ID": "d32ea0f5-0e60-4cc7-87dd-6435ff71d0e6",
+    "Type": 2,
+    "HashName": "f26694d306ec09429162c289bb4c8d99",
+    "NameSpace": "Aimmy2.Controls",
+    "Name": "ModelMenuControl",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UISections/ModelMenuControl.xaml.cs"
+    ]
+  },
+  "2ff0f7518314a60157c7b3e895ccc73d": {
+    "ID": "317f1721-5899-4569-9773-917fb3a73015",
+    "Type": 2,
+    "HashName": "2ff0f7518314a60157c7b3e895ccc73d",
+    "NameSpace": "Aimmy2.Controls",
+    "Name": "SettingsMenuControl",
+    "Children": [],
+    "Parents": [
+      "4fc45a967f5e4620c03a353d6d4d11c2"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/UISections/SettingsMenuControl.xaml.cs"
+    ]
+  },
+  "3d1e5929187a615bb169240021e9be3e": {
+    "ID": "8dba7ed9-9cfb-4e9d-8ba5-58ed63a525b9",
+    "Type": 2,
+    "HashName": "3d1e5929187a615bb169240021e9be3e",
+    "NameSpace": "Aimmy2.System.ComponentModel",
+    "Name": "INotifyPropertyChanged",
+    "Children": [
+      "cc252ed84ac2209e06cc55475fa83fd3"
+    ],
+    "Parents": [],
+    "FilePaths": []
+  },
+  "cc252ed84ac2209e06cc55475fa83fd3": {
+    "ID": "c0382351-65b1-4585-80fd-8bee7c2d1368",
+    "Type": 2,
+    "HashName": "cc252ed84ac2209e06cc55475fa83fd3",
+    "NameSpace": "Visuality",
+    "Name": "NoticeItem",
+    "Children": [],
+    "Parents": [
+      "3d1e5929187a615bb169240021e9be3e"
+    ],
+    "FilePaths": [
+      "/Users/pratiksinghthakur/perproj/dotnet/Aimmy/Aimmy2/Visuality/NoticeBar.xaml.cs"
+    ]
+  }
+}

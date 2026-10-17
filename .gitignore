@@ -1,2 +1,4 @@
 bin
 obj
+graph-viewer/node_modules
+graph-viewer/dist
