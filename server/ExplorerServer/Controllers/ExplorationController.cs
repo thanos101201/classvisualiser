@@ -1,6 +1,7 @@
 using Analyzation;
 using Data;
 using Forest;
+using Forest.Methods;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExplorerServer.Controllers;
@@ -9,6 +10,8 @@ namespace ExplorerServer.Controllers;
 [Route("api")]
 public class ExplorationController(
     SolutionBundleReader bundleReader,
+    MethodIndexReader methodIndexReader,
+    SourceCodeReader sourceCodeReader,
     AnalyzationClient analyzationClient,
     IConfiguration configuration,
     ILogger<ExplorationController> logger) : ControllerBase
@@ -56,6 +59,50 @@ public class ExplorationController(
     {
         var node = await bundleReader.GetNodeAsync(folder, nodeHash, cancellationToken);
         return node == null ? NotFound($"Node '{nodeHash}' not found.") : Ok(node);
+    }
+
+    [HttpGet("solutions/{folder}/types/{typeHash}/methods")]
+    public async Task<ActionResult<IReadOnlyList<MethodMetadata>>> GetTypeMethodsAsync(
+        string folder,
+        string typeHash,
+        CancellationToken cancellationToken)
+    {
+        var methods = await methodIndexReader.GetMethodsForTypeAsync(folder, typeHash, cancellationToken);
+        return Ok(methods);
+    }
+
+    [HttpGet("solutions/{folder}/methods/{methodHash}")]
+    public async Task<ActionResult<MethodMetadata>> GetMethodMetadataAsync(
+        string folder,
+        string methodHash,
+        CancellationToken cancellationToken)
+    {
+        var method = await methodIndexReader.GetMethodAsync(folder, methodHash, cancellationToken);
+        return method == null ? NotFound() : Ok(method);
+    }
+
+    [HttpGet("source/snippet")]
+    public ActionResult<SourceSnippet> GetSourceSnippet(
+        [FromQuery] string path,
+        [FromQuery] int startLine,
+        [FromQuery] int endLine)
+    {
+        try
+        {
+            return Ok(sourceCodeReader.ReadLines(path, startLine, endLine));
+        }
+        catch (FileNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     /// <summary>Re-run Roslyn analysis. Body or query must include full path to .sln file.</summary>

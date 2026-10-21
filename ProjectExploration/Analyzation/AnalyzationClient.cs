@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Data;
 using Forest;
+using Forest.Methods;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -71,8 +72,16 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                         nodeManager.AddRelation(childNode, parentNode);
                     }
                 }
-                var node = nodeManager.GetSerializedNodes();
-                await repository.WriteContentAsync(node, @$"{solutionName}/{project.Name}Nodes");
+            }
+
+            var node = nodeManager.GetSerializedNodes();
+            await repository.WriteContentAsync(node, @$"{solutionName}/{project.Name}Nodes");
+
+            if (compilation != null)
+            {
+                var methodIndex = MethodCallAnalyzer.AnalyzeCompilation(compilation);
+                var methodJson = JsonSerializer.Serialize(methodIndex, new JsonSerializerOptions { WriteIndented = true });
+                await repository.WriteContentAsync(methodJson, @$"{solutionName}/{project.Name}MethodIndex");
             }
         }
 

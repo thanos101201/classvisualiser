@@ -24,8 +24,20 @@ builder.Services.AddCors(options =>
     });
 });
 
+var sourceRoots = builder.Configuration.GetSection("SourceRoots").Get<string[]>() ?? Array.Empty<string>();
+if (sourceRoots.Length == 0)
+{
+    sourceRoots =
+    [
+        Path.GetFullPath(Path.Combine(repositoryPath, "..", "..", "..")),
+        Path.GetFullPath(Path.Combine(repositoryPath, "..")),
+    ];
+}
+
 builder.Services.AddSingleton(new FileRepository(repositoryPath));
 builder.Services.AddSingleton(new SolutionBundleReader(repositoryPath));
+builder.Services.AddSingleton(new MethodIndexReader(repositoryPath));
+builder.Services.AddSingleton(new SourceCodeReader(sourceRoots));
 builder.Services.AddSingleton<NodeManager>();
 builder.Services.AddSingleton<AnalyzationClient>();
 

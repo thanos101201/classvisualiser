@@ -7,6 +7,7 @@ import {
   type FormEvent,
 } from 'react'
 import { GraphViewer3D } from './components/GraphViewer3D'
+import { MethodCodePanel } from './components/MethodCodePanel'
 import { NodeDetailPanel } from './components/NodeDetailPanel'
 import { buildGraphData, listProjects } from './lib/buildGraphData'
 import { readGraphFromJsonFile } from './lib/loadGraphFromFile'
@@ -49,6 +50,7 @@ function App() {
   const [graphSource, setGraphSource] = useState<'repository' | 'local'>(
     'repository',
   )
+  const [activeMethodHash, setActiveMethodHash] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const clearSelection = useCallback(() => {
@@ -197,6 +199,7 @@ function App() {
         setHighlightId(null)
         return
       }
+      setActiveMethodHash(null)
       focusNode(node.id)
     },
     [focusNode],
@@ -385,14 +388,25 @@ function App() {
           />
         )}
 
-        <aside className={`detail-panel ${selected ? 'open' : ''}`}>
-          {selected ? (
+        <aside
+          className={`detail-panel ${selected || activeMethodHash ? 'open' : ''} ${activeMethodHash ? 'detail-panel-code' : ''}`}
+        >
+          {activeMethodHash && activeBundleFolder ? (
+            <MethodCodePanel
+              solutionFolder={activeBundleFolder}
+              methodHash={activeMethodHash}
+              onClose={() => setActiveMethodHash(null)}
+              onNavigateToMethod={setActiveMethodHash}
+            />
+          ) : selected ? (
             <NodeDetailPanel
               selected={selected}
               nodeStore={nodeStore}
               graphData={graphData}
               projectsIndex={projectsIndex}
+              solutionFolder={activeBundleFolder}
               onNavigate={focusNode}
+              onMethodSelect={setActiveMethodHash}
               onClose={() => {
                 setSelected(null)
                 setHighlightId(null)
