@@ -1,7 +1,10 @@
 using System.ComponentModel;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Models;
 
 namespace Data;
+
 
 public class FileRepository
 {
@@ -12,10 +15,27 @@ public class FileRepository
         _directoryPath = directoryPath;
     }
 
-    public bool CheckFileExistence(string project)
+    public bool CheckFileExistence(string project, string slnName)
     {
-        var directory = Directory.GetFiles(_directoryPath).Contains($"{project}.json");
+        var directory = Directory.GetFiles(@$"{_directoryPath}/{slnName}").Contains(@$"{_directoryPath}/{slnName}/{project}.json");
+        foreach(var ele in Directory.GetFiles($"{_directoryPath}"))
+        {
+            Console.WriteLine($"{ele}");
+        }
         return directory;
+    }
+
+    public async Task<string> GetProjectJsonAsync(string project, string slnName)
+    {
+        if (!CheckFileExistence(project, slnName))
+        {
+            throw new ArgumentException($"Json for the {project} does not exist.");
+        }
+
+        using var reader = new StreamReader(File.OpenRead($"{_directoryPath}/{slnName}/{project}.json"));
+        var content = await reader.ReadToEndAsync();
+
+        return content;
     }
 
     public T LoadData<T> (string projectName)
@@ -50,5 +70,14 @@ public class FileRepository
     public void CreateDirectory(string projectName)
     {
         Directory.CreateDirectory(@$"{_directoryPath}/{projectName}");
+    }
+
+    public async Task GetNodeAsync(string projectName, string nodeHash, string slnName)
+    {
+        using var reader = new StreamReader(File.OpenRead($"{_directoryPath}/{slnName}/{projectName}Nodes.json"));
+        var content = await reader.ReadToEndAsync();
+
+        var nodeCollection = JsonSerializer.Deserialize<TreeNodeCollection>(content);
+        
     }
 }

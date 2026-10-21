@@ -2,6 +2,11 @@ import {
   parseGraphJsonContent,
   parseNodeStore,
 } from './buildGraphData'
+import {
+  apiHealthCheck,
+  listSolutionsFromApi,
+  loadBundleFromApi,
+} from './explorerApi'
 import type {
   NodeStore,
   ProjectsNodeIndex,
@@ -44,13 +49,17 @@ export function mergeNodeStores(stores: NodeStore[]): NodeStore {
 export async function listSolutionBundles(
   repoBase: string,
 ): Promise<SolutionBundleManifest[]> {
+  if (await apiHealthCheck()) {
+    return listSolutionsFromApi()
+  }
+
   try {
     const res = await fetch('/api/repository/solution-bundles')
     if (res.ok) {
       return (await res.json()) as SolutionBundleManifest[]
     }
   } catch {
-    /* preview / static hosting */
+    /* static file fallback */
   }
 
   const siteBase = repoBase.replace(/\/repository\/?$/i, '')
@@ -70,6 +79,10 @@ export async function loadSolutionBundle(
   repoBase: string,
   manifest: SolutionBundleManifest,
 ): Promise<SolutionBundle> {
+  if (await apiHealthCheck()) {
+    return loadBundleFromApi(manifest.folder)
+  }
+
   const [relationsRes, slnRes] = await Promise.all([
     fetch(bundleUrl(repoBase, manifest.folder, manifest.relationsFile)),
     fetch(bundleUrl(repoBase, manifest.folder, manifest.slnFile)),
