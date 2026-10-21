@@ -65,7 +65,16 @@ repository/
 
 For solutions with **multiple projects**, expect one `{ProjectName}Nodes.json` per project and multiple keys in `{Solution}.sln.json`.
 
-### 2. Open the 3D viewer (React)
+### 2. Start the API (recommended)
+
+```bash
+cd server/ExplorerServer
+dotnet run
+```
+
+Serves `http://localhost:5243` — see [server/ExplorerServer/README.md](server/ExplorerServer/README.md).
+
+### 3. Open the 3D viewer (React)
 
 ```bash
 cd graph-viewer
@@ -73,7 +82,7 @@ npm install
 npm run dev
 ```
 
-Open the URL shown in the terminal (usually `http://localhost:5173`). Choose **Solution → repository/Aimmy2/** (or your folder). Click nodes for details; use **Hash** search to jump to a type.
+Open `http://localhost:5173`. With the API running, the viewer loads data from `/api/solutions/.../bundle` (Vite proxies `/api` to port 5243). Without the API, it falls back to static JSON under `ProjectExploration/repository/`.
 
 Production build (copies `repository/` into `dist/`):
 

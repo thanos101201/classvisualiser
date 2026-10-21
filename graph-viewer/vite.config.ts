@@ -6,7 +6,7 @@ import { defineConfig, type Plugin } from 'vite'
 import { discoverBundleManifestFromFileNames } from './src/lib/discoverSolutionFolder'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
-const repositoryDir = path.resolve(rootDir, '../repository')
+const repositoryDir = path.resolve(rootDir, '../ProjectExploration/repository')
 
 const GRAPH_INDEX_EXCLUDE = /^ProjectsNodeIndex\.json$/i
 const GRAPH_INDEX_PREFIX = /^index/i
@@ -130,4 +130,12 @@ function repositoryPlugin(): Plugin {
 
 export default defineConfig({
   plugins: [react(), repositoryPlugin()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5243',
+        changeOrigin: true,
+      },
+    },
+  },
 })
