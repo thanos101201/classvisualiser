@@ -6,10 +6,46 @@ namespace Data;
 public class MethodIndexReader
 {
     private readonly string _repositoryRoot;
+    private readonly object _cacheLock = new();
+    private readonly Dictionary<string, (string Signature, Dictionary<string, MethodMetadata> Index)> _folderCache =
+        new();
 
     public MethodIndexReader(string repositoryRoot)
     {
         _repositoryRoot = repositoryRoot;
+    }
+
+    private string BuildFolderSignature(string folder)
+    {
+        var parts = new List<string>();
+        foreach (var file in ListMethodIndexFiles(folder))
+        {
+            var path = Path.Combine(_repositoryRoot, folder, file);
+            var ticks = File.Exists(path) ? File.GetLastWriteTimeUtc(path).Ticks : 0L;
+            parts.Add($"{file}:{ticks}");
+        }
+
+        return string.Join('|', parts);
+    }
+
+    private async Task<Dictionary<string, MethodMetadata>> GetIndexAsync(
+        string folder,
+        CancellationToken cancellationToken)
+    {
+        var signature = BuildFolderSignature(folder);
+        lock (_cacheLock)
+        {
+            if (_folderCache.TryGetValue(folder, out var hit) && hit.Signature == signature)
+                return hit.Index;
+        }
+
+        var index = await LoadMergedIndexAsync(folder, cancellationToken);
+        lock (_cacheLock)
+        {
+            _folderCache[folder] = (signature, index);
+        }
+
+        return index;
     }
 
     public IReadOnlyList<string> ListMethodIndexFiles(string folder)
@@ -52,7 +88,7 @@ public class MethodIndexReader
         string typeHash,
         CancellationToken cancellationToken = default)
     {
-        var index = await LoadMergedIndexAsync(folder, cancellationToken);
+        var index = await GetIndexAsync(folder, cancellationToken);
         return index.Values
             .Where(m => m.TypeHash == typeHash)
             .OrderBy(m => m.Name)
@@ -64,7 +100,7 @@ public class MethodIndexReader
         string methodHash,
         CancellationToken cancellationToken = default)
     {
-        var index = await LoadMergedIndexAsync(folder, cancellationToken);
+        var index = await GetIndexAsync(folder, cancellationToken);
         return index.TryGetValue(methodHash, out var method) ? method : null;
     }
 }

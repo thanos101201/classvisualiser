@@ -431,6 +431,18 @@
   box-shadow: inset 3px 0 0 #4ade80;
 }
 
+.method-graph-card-loading {
+  border-color: #64748b;
+  min-height: 6rem;
+}
+
+.method-graph-card-spinner {
+  margin: 0;
+  padding: 1rem 0.65rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
 .back-btn {
   margin-bottom: 0.5rem;
   padding: 0.25rem 0.5rem;

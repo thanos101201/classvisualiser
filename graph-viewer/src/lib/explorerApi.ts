@@ -116,6 +116,35 @@ export async function fetchMethodMetadata(
   return (await res.json()) as MethodMetadata
 }
 
+export type MethodSourceViewResponse = {
+  method: MethodMetadata
+  lines: string[]
+  startLine: number
+}
+
+/** Single round-trip: metadata + method body lines. */
+export async function fetchMethodSourceView(
+  folder: string,
+  methodHash: string,
+): Promise<MethodSourceViewResponse> {
+  const res = await fetch(
+    `${API_BASE}/api/solutions/${encodeURIComponent(folder)}/methods/${encodeURIComponent(methodHash)}/source`,
+  )
+  if (!res.ok) {
+    throw new Error(`API method source failed (${res.status})`)
+  }
+  const data = (await res.json()) as {
+    method: MethodMetadata
+    lines: string[]
+    startLine: number
+  }
+  return {
+    method: data.method,
+    lines: data.lines,
+    startLine: data.startLine,
+  }
+}
+
 export async function fetchSourceSnippet(
   filePath: string,
   startLine: number,

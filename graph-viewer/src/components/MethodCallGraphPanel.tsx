@@ -6,9 +6,9 @@ import {
   useState,
 } from 'react'
 import {
-  fetchMethodMetadata,
-  fetchSourceSnippet,
-} from '../lib/explorerApi'
+  loadMethodView,
+  prefetchMethodView,
+} from '../lib/methodViewCache'
 import {
   estimateCardHeight,
   METHOD_CARD_WIDTH,
@@ -18,9 +18,11 @@ import {
 import type { MethodCallSiteRef, MethodMetadata } from '../types/method'
 
 type MethodGraphNode = LayoutNode & {
-  method: MethodMetadata
+  method: MethodMetadata | null
   lines: string[]
   startLine: number
+  loading?: boolean
+  title?: string
 }
 
 export type MethodGraphEdge = {
@@ -68,18 +70,13 @@ export function MethodCallGraphPanel({
 
   const loadMethodNode = useCallback(
     async (methodHash: string, layout: LayoutNode): Promise<MethodGraphNode> => {
-      const method = await fetchMethodMetadata(solutionFolder, methodHash)
-      const snippet = await fetchSourceSnippet(
-        method.filePath,
-        method.bodySpan.startLine,
-        method.bodySpan.endLine,
-      )
+      const view = await loadMethodView(solutionFolder, methodHash)
       return {
         ...layout,
-        method,
-        lines: snippet.lines,
-        startLine: snippet.startLine,
-        lineCount: snippet.lines.length,
+        method: view.method,
+        lines: view.lines,
+        startLine: view.startLine,
+        lineCount: view.lines.length,
       }
     },
     [solutionFolder],
@@ -116,6 +113,8 @@ export function MethodCallGraphPanel({
 
   const navigateCall = useCallback(
     async (from: MethodGraphNode, absoluteLine: number) => {
+      if (!from.method || from.loading) return
+
       const matches = callsOnLine(from.method.calls, absoluteLine).filter(
         (c) => c.calleeMethodHash,
       )
@@ -126,46 +125,54 @@ export function MethodCallGraphPanel({
       const toHash = call.calleeMethodHash
       const edgeId = `${from.methodHash}:${absoluteLine}->${toHash}`
 
-      let layoutForNew: LayoutNode | null = null
+      if (edges.some((e) => e.id === edgeId)) return
 
-      setEdges((prev) => {
-        if (prev.some((e) => e.id === edgeId)) return prev
-        const siblingIndex = prev.filter(
-          (e) => e.fromMethodHash === from.methodHash,
-        ).length
-        layoutForNew = {
-          methodHash: toHash,
-          ...placeChildNode(from, siblingIndex),
-          lineCount: 1,
-        }
-        return [
-          ...prev,
-          {
-            id: edgeId,
-            fromMethodHash: from.methodHash,
-            toMethodHash: toHash,
-            fromLine: absoluteLine,
-          },
-        ]
-      })
+      const siblingIndex = edges.filter(
+        (e) => e.fromMethodHash === from.methodHash,
+      ).length
+      const layoutForNew: LayoutNode = {
+        methodHash: toHash,
+        ...placeChildNode(from, siblingIndex),
+        lineCount: 1,
+      }
+
+      setEdges((prev) => [
+        ...prev,
+        {
+          id: edgeId,
+          fromMethodHash: from.methodHash,
+          toMethodHash: toHash,
+          fromLine: absoluteLine,
+        },
+      ])
 
       const alreadyHasNode = nodes.some((n) => n.methodHash === toHash)
-      if (!alreadyHasNode && layoutForNew) {
-        setLoading(true)
+      if (!alreadyHasNode) {
+        const placeholder: MethodGraphNode = {
+          ...layoutForNew,
+          method: null,
+          lines: [],
+          startLine: 0,
+          loading: true,
+          title: call.calleeDisplayName ?? toHash,
+        }
+        setNodes((prev) =>
+          prev.some((n) => n.methodHash === toHash) ? prev : [...prev, placeholder],
+        )
+
         try {
           const loaded = await loadMethodNode(toHash, layoutForNew)
           setNodes((prev) =>
-            prev.some((n) => n.methodHash === toHash) ? prev : [...prev, loaded],
+            prev.map((n) => (n.methodHash === toHash ? loaded : n)),
           )
         } catch (e) {
+          setNodes((prev) => prev.filter((n) => n.methodHash !== toHash))
+          setEdges((prev) => prev.filter((e) => e.id !== edgeId))
           setError(e instanceof Error ? e.message : 'Failed to load callee')
-          return
-        } finally {
-          setLoading(false)
         }
       }
     },
-    [loadMethodNode, nodes],
+    [edges, loadMethodNode, nodes],
   )
 
   const updateEdgePaths = useCallback(() => {
@@ -276,19 +283,28 @@ export function MethodCallGraphPanel({
                 if (el) cardRefs.current.set(node.methodHash, el)
                 else cardRefs.current.delete(node.methodHash)
               }}
-              className="method-graph-card"
+              className={`method-graph-card ${node.loading ? 'method-graph-card-loading' : ''}`}
               style={{ left: node.x, top: node.y, width: METHOD_CARD_WIDTH }}
             >
               <div className="method-graph-card-header">
-                <strong>{node.method.name}</strong>
-                <span className="mono muted">
-                  L{node.method.bodySpan.startLine}–{node.method.bodySpan.endLine}
-                </span>
+                <strong>
+                  {node.loading
+                    ? node.title ?? 'Loading…'
+                    : node.method?.name}
+                </strong>
+                {!node.loading && node.method && (
+                  <span className="mono muted">
+                    L{node.method.bodySpan.startLine}–{node.method.bodySpan.endLine}
+                  </span>
+                )}
               </div>
+              {node.loading ? (
+                <p className="method-graph-card-spinner">Loading source…</p>
+              ) : (
               <pre className="method-code method-code-compact">
                 {node.lines.map((text, index) => {
                   const lineNo = node.startLine + index
-                  const lineCalls = callsOnLine(node.method.calls, lineNo)
+                  const lineCalls = callsOnLine(node.method!.calls, lineNo)
                   const clickable = lineCalls.some((c) => c.calleeMethodHash)
                   const title = lineCalls
                     .map((c) => c.calleeDisplayName ?? c.calleeMethodHash)
@@ -311,6 +327,12 @@ export function MethodCallGraphPanel({
                           ? 'code-line-edge-active'
                           : ''
                       }`}
+                      onMouseEnter={() => {
+                        const hash = lineCalls.find(
+                          (c) => c.calleeMethodHash,
+                        )?.calleeMethodHash
+                        if (hash) prefetchMethodView(solutionFolder, hash)
+                      }}
                       onClick={() => clickable && navigateCall(node, lineNo)}
                       title={clickable ? title : undefined}
                       role={clickable ? 'button' : undefined}
@@ -321,6 +343,7 @@ export function MethodCallGraphPanel({
                   )
                 })}
               </pre>
+              )}
             </div>
           ))}
           </div>

@@ -1,5 +1,6 @@
 using Analyzation;
 using Data;
+using ExplorerServer;
 using Forest;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,7 +38,9 @@ if (sourceRoots.Length == 0)
 builder.Services.AddSingleton(new FileRepository(repositoryPath));
 builder.Services.AddSingleton(new SolutionBundleReader(repositoryPath));
 builder.Services.AddSingleton(new MethodIndexReader(repositoryPath));
+builder.Services.AddSingleton(new MethodShardStore(repositoryPath));
 builder.Services.AddSingleton(new SourceCodeReader(sourceRoots));
+builder.Services.AddHostedService<MethodShardBackfillHostedService>();
 builder.Services.AddSingleton<NodeManager>();
 builder.Services.AddSingleton<AnalyzationClient>();
 

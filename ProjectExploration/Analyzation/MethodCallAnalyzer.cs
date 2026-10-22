@@ -6,9 +6,9 @@ namespace Analyzation;
 
 public static class MethodCallAnalyzer
 {
-    public static Dictionary<string, MethodMetadata> AnalyzeCompilation(Compilation compilation)
+    public static Dictionary<string, MethodShard> AnalyzeCompilation(Compilation compilation)
     {
-        var methods = new Dictionary<string, MethodMetadata>();
+        var methods = new Dictionary<string, MethodShard>();
 
         foreach (var tree in compilation.SyntaxTrees)
         {
@@ -37,6 +37,7 @@ public static class MethodCallAnalyzer
 
                     var bodySpan = ToSpan(syntax);
                     var calls = CollectCallSites(syntax, model);
+                    var (bodyLines, startLine) = ExtractBodyLines(syntax);
 
                     var meta = new MethodMetadata(
                         MethodMetadata.CreateMethodHash(member),
@@ -46,7 +47,7 @@ public static class MethodCallAnalyzer
                         bodySpan,
                         calls);
 
-                    methods[meta.MethodHash] = meta;
+                    methods[meta.MethodHash] = new MethodShard(meta, bodyLines, startLine);
                 }
             }
         }
@@ -100,5 +101,17 @@ public static class MethodCallAnalyzer
             start.Character + 1,
             end.Line + 1,
             end.Character + 1);
+    }
+
+    private static (IReadOnlyList<string> Lines, int StartLine) ExtractBodyLines(SyntaxNode methodSyntax)
+    {
+        var text = methodSyntax.SyntaxTree.GetText();
+        var lineSpan = methodSyntax.SyntaxTree.GetLineSpan(methodSyntax.Span);
+        var start = lineSpan.StartLinePosition.Line;
+        var end = lineSpan.EndLinePosition.Line;
+        var lines = new List<string>(end - start + 1);
+        for (var i = start; i <= end; i++)
+            lines.Add(text.Lines[i].ToString());
+        return (lines, start + 1);
     }
 }

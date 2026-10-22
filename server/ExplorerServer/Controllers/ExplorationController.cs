@@ -11,6 +11,7 @@ namespace ExplorerServer.Controllers;
 public class ExplorationController(
     SolutionBundleReader bundleReader,
     MethodIndexReader methodIndexReader,
+    MethodShardStore methodShardStore,
     SourceCodeReader sourceCodeReader,
     AnalyzationClient analyzationClient,
     IConfiguration configuration,
@@ -81,6 +82,43 @@ public class ExplorationController(
         return method == null ? NotFound() : Ok(method);
     }
 
+    /// <summary>Method metadata plus body source in one response (fewer round-trips for the call graph).</summary>
+    [HttpGet("solutions/{folder}/methods/{methodHash}/source")]
+    public async Task<ActionResult<MethodSourceView>> GetMethodSourceViewAsync(
+        string folder,
+        string methodHash,
+        CancellationToken cancellationToken)
+    {
+        var shard = await methodShardStore.TryReadAsync(folder, methodHash, cancellationToken);
+        if (shard != null)
+            return Ok(new MethodSourceView(shard.Method, shard.Lines, shard.StartLine));
+
+        var method = await methodIndexReader.GetMethodAsync(folder, methodHash, cancellationToken);
+        if (method == null)
+            return NotFound();
+
+        try
+        {
+            var snippet = sourceCodeReader.ReadLines(
+                method.FilePath,
+                method.BodySpan.StartLine,
+                method.BodySpan.EndLine);
+            return Ok(new MethodSourceView(method, snippet.Lines, snippet.StartLine));
+        }
+        catch (FileNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     [HttpGet("source/snippet")]
     public ActionResult<SourceSnippet> GetSourceSnippet(
         [FromQuery] string path,
@@ -138,3 +176,8 @@ public record SolutionBundleResponse(
     Dictionary<string, List<string>> Relations,
     Dictionary<string, List<string>> ProjectsIndex,
     Dictionary<string, TreeNode> NodeStore);
+
+public record MethodSourceView(
+    MethodMetadata Method,
+    IReadOnlyList<string> Lines,
+    int StartLine);
