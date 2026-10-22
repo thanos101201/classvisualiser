@@ -319,6 +319,188 @@
   word-break: break-all;
 }
 
+.method-graph-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(4px);
+}
+
+.method-graph-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.method-graph-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #334155;
+  flex-shrink: 0;
+}
+
+.method-graph-title {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.method-graph-status {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.method-graph-close {
+  margin-left: auto;
+}
+
+.method-graph-error {
+  margin: 0.5rem 1rem;
+}
+
+.method-graph-canvas {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  position: relative;
+}
+
+.method-graph-world {
+  position: relative;
+}
+
+.method-graph-edges {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.method-edge-path {
+  fill: none;
+  stroke: #4ade80;
+  stroke-width: 2;
+  opacity: 0.85;
+}
+
+.method-edge-path-glow {
+  fill: none;
+  stroke: #4ade80;
+  stroke-width: 6;
+  opacity: 0.15;
+}
+
+.method-graph-nodes {
+  position: relative;
+  z-index: 1;
+}
+
+.method-graph-card {
+  position: absolute;
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.method-graph-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid #334155;
+  font-size: 0.8rem;
+}
+
+.method-code-compact {
+  max-height: min(50vh, 22rem);
+  margin: 0;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.code-line-edge-active {
+  box-shadow: inset 3px 0 0 #4ade80;
+}
+
+.method-graph-card-loading {
+  border-color: #64748b;
+  min-height: 6rem;
+}
+
+.method-graph-card-spinner {
+  margin: 0;
+  padding: 1rem 0.65rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.back-btn {
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.back-btn:hover {
+  color: #f8fafc;
+}
+
+.method-title {
+  margin: 0 2rem 0.25rem 0;
+}
+
+.method-code {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0;
+  background: #0f172a;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  overflow: auto;
+  max-height: min(60vh, 28rem);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.code-line {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0 0.5rem;
+}
+
+.code-line-call {
+  cursor: pointer;
+  background: rgba(74, 222, 128, 0.08);
+}
+
+.code-line-call:hover {
+  background: rgba(74, 222, 128, 0.18);
+}
+
+.line-no {
+  flex: 0 0 2.5rem;
+  text-align: right;
+  color: #64748b;
+  user-select: none;
+}
+
+.line-text {
+  flex: 1;
+  white-space: pre;
+  color: #e2e8f0;
+}
+
 .close-btn {
   position: absolute;
   top: 0.5rem;

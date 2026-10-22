@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+import { fetchTypeMethods } from '../lib/explorerApi'
 import {
   formatNodeType,
   getGraphNeighbors,
@@ -6,6 +8,7 @@ import {
   resolveTreeNode,
   shortLabelForHash,
 } from '../lib/nodeDetails'
+import type { MethodMetadata } from '../types/method'
 import type {
   GraphData,
   GraphNode,
@@ -18,7 +21,9 @@ type Props = {
   nodeStore: NodeStore | null
   graphData: GraphData
   projectsIndex: ProjectsNodeIndex | null
+  solutionFolder: string
   onNavigate: (hash: string) => void
+  onMethodSelect: (methodHash: string) => void
   onClose: () => void
 }
 
@@ -63,9 +68,35 @@ export function NodeDetailPanel({
   nodeStore,
   graphData,
   projectsIndex,
+  solutionFolder,
   onNavigate,
+  onMethodSelect,
   onClose,
 }: Props) {
+  const [methods, setMethods] = useState<MethodMetadata[]>([])
+  const [methodsError, setMethodsError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const list = await fetchTypeMethods(solutionFolder, selected.id)
+        if (!cancelled) {
+          setMethods(list)
+          setMethodsError(null)
+        }
+      } catch {
+        if (!cancelled) {
+          setMethods([])
+          setMethodsError('Methods unavailable (re-run analyzer + API).')
+        }
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [solutionFolder, selected.id])
+
   const meta = resolveTreeNode(selected.id, nodeStore)
   const graphNeighbors = getGraphNeighbors(selected.id, graphData)
 
@@ -146,6 +177,31 @@ export function NodeDetailPanel({
           onNavigate={onNavigate}
           empty="No child relations in this graph."
         />
+      </section>
+
+      <section className="detail-section">
+        <h3>Methods</h3>
+        <p className="detail-hint">Open method source (loaded from disk on click)</p>
+        {methodsError && <p className="detail-empty">{methodsError}</p>}
+        {!methodsError && methods.length === 0 && (
+          <p className="detail-empty">No methods indexed for this type.</p>
+        )}
+        <ul className="hash-link-list">
+          {methods.map((m) => (
+            <li key={m.methodHash}>
+              <button
+                type="button"
+                className="hash-link"
+                onClick={() => onMethodSelect(m.methodHash)}
+              >
+                <span className="hash-link-name">{m.name}</span>
+                <span className="hash-link-id mono">
+                  L{m.bodySpan.startLine}–{m.bodySpan.endLine}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {filePaths && filePaths.length > 0 && (

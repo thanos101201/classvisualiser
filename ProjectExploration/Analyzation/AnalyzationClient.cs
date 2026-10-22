@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Data;
 using Forest;
+using Forest.Methods;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,7 +9,10 @@ using Microsoft.CodeAnalysis.MSBuild;
 
 namespace Analyzation;
 
-public class AnalyzationClient(NodeManager nodeManager, FileRepository repository)
+public class AnalyzationClient(
+    NodeManager nodeManager,
+    FileRepository repository,
+    MethodShardStore shardStore)
 {
     private Dictionary<string, HashSet<string>> _projectNodeMap = new();
 
@@ -18,6 +22,7 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
         using var workspace = MSBuildWorkspace.Create();
         var solution = await workspace.OpenSolutionAsync(slnPath);
         var solutionName = Path.GetFileNameWithoutExtension(solution.FilePath);
+        shardStore.ClearSolutionShards(solutionName);
 
         foreach (var project in solution.Projects)  
         {
@@ -71,8 +76,18 @@ public class AnalyzationClient(NodeManager nodeManager, FileRepository repositor
                         nodeManager.AddRelation(childNode, parentNode);
                     }
                 }
-                var node = nodeManager.GetSerializedNodes();
-                await repository.WriteContentAsync(node, @$"{solutionName}/{project.Name}Nodes");
+            }
+
+            var node = nodeManager.GetSerializedNodes();
+            await repository.WriteContentAsync(node, @$"{solutionName}/{project.Name}Nodes");
+
+            if (compilation != null)
+            {
+                var shards = MethodCallAnalyzer.AnalyzeCompilation(compilation);
+                await shardStore.WriteManyAsync(solutionName, shards.Values);
+                var methodIndex = shards.ToDictionary(kv => kv.Key, kv => kv.Value.Method);
+                var methodJson = JsonSerializer.Serialize(methodIndex, new JsonSerializerOptions { WriteIndented = true });
+                await repository.WriteContentAsync(methodJson, @$"{solutionName}/{project.Name}MethodIndex");
             }
         }
 

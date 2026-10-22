@@ -29,6 +29,7 @@ export type SolutionBundleManifest = {
   relationsFile: string
   slnFile: string
   nodeFiles: string[]
+  methodIndexFiles?: string[]
 }
 
 export type SolutionBundle = {

@@ -1,6 +1,7 @@
 using Analyzation;
 using Data;
 using Forest;
+using Forest.Methods;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExplorerServer.Controllers;
@@ -9,6 +10,9 @@ namespace ExplorerServer.Controllers;
 [Route("api")]
 public class ExplorationController(
     SolutionBundleReader bundleReader,
+    MethodIndexReader methodIndexReader,
+    MethodShardStore methodShardStore,
+    SourceCodeReader sourceCodeReader,
     AnalyzationClient analyzationClient,
     IConfiguration configuration,
     ILogger<ExplorationController> logger) : ControllerBase
@@ -58,6 +62,87 @@ public class ExplorationController(
         return node == null ? NotFound($"Node '{nodeHash}' not found.") : Ok(node);
     }
 
+    [HttpGet("solutions/{folder}/types/{typeHash}/methods")]
+    public async Task<ActionResult<IReadOnlyList<MethodMetadata>>> GetTypeMethodsAsync(
+        string folder,
+        string typeHash,
+        CancellationToken cancellationToken)
+    {
+        var methods = await methodIndexReader.GetMethodsForTypeAsync(folder, typeHash, cancellationToken);
+        return Ok(methods);
+    }
+
+    [HttpGet("solutions/{folder}/methods/{methodHash}")]
+    public async Task<ActionResult<MethodMetadata>> GetMethodMetadataAsync(
+        string folder,
+        string methodHash,
+        CancellationToken cancellationToken)
+    {
+        var method = await methodIndexReader.GetMethodAsync(folder, methodHash, cancellationToken);
+        return method == null ? NotFound() : Ok(method);
+    }
+
+    /// <summary>Method metadata plus body source in one response (fewer round-trips for the call graph).</summary>
+    [HttpGet("solutions/{folder}/methods/{methodHash}/source")]
+    public async Task<ActionResult<MethodSourceView>> GetMethodSourceViewAsync(
+        string folder,
+        string methodHash,
+        CancellationToken cancellationToken)
+    {
+        var shard = await methodShardStore.TryReadAsync(folder, methodHash, cancellationToken);
+        if (shard != null)
+            return Ok(new MethodSourceView(shard.Method, shard.Lines, shard.StartLine));
+
+        var method = await methodIndexReader.GetMethodAsync(folder, methodHash, cancellationToken);
+        if (method == null)
+            return NotFound();
+
+        try
+        {
+            var snippet = sourceCodeReader.ReadLines(
+                method.FilePath,
+                method.BodySpan.StartLine,
+                method.BodySpan.EndLine);
+            return Ok(new MethodSourceView(method, snippet.Lines, snippet.StartLine));
+        }
+        catch (FileNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("source/snippet")]
+    public ActionResult<SourceSnippet> GetSourceSnippet(
+        [FromQuery] string path,
+        [FromQuery] int startLine,
+        [FromQuery] int endLine)
+    {
+        try
+        {
+            return Ok(sourceCodeReader.ReadLines(path, startLine, endLine));
+        }
+        catch (FileNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     /// <summary>Re-run Roslyn analysis. Body or query must include full path to .sln file.</summary>
     [HttpPost("solutions/{folder}/analyze")]
     public async Task<IActionResult> AnalyzeAsync(string folder, [FromQuery] string? slnPath, CancellationToken cancellationToken)
@@ -91,3 +176,8 @@ public record SolutionBundleResponse(
     Dictionary<string, List<string>> Relations,
     Dictionary<string, List<string>> ProjectsIndex,
     Dictionary<string, TreeNode> NodeStore);
+
+public record MethodSourceView(
+    MethodMetadata Method,
+    IReadOnlyList<string> Lines,
+    int StartLine);

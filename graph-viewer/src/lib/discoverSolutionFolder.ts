@@ -26,7 +26,10 @@ export function discoverBundleManifestFromFileNames(
 
   const slnBase = slnFile.replace(/\.sln\.json$/i, '')
   const relationCandidates = json.filter(
-    (n) => !/\.sln\.json$/i.test(n) && !/Nodes\.json$/i.test(n),
+    (n) =>
+      !/\.sln\.json$/i.test(n) &&
+      !/Nodes\.json$/i.test(n) &&
+      !/MethodIndex\.json$/i.test(n),
   )
   if (!relationCandidates.length) return null
 

@@ -1,13 +1,14 @@
 # ProjectExplorer
 
-Analyze a .NET solution with Roslyn, cache the result as JSON, and explore type relationships in an interactive **3D graph** in the browser.
+Analyze a .NET solution with Roslyn, cache the result as JSON, and explore it in the browser: a **3D type hierarchy** plus an interactive **method call graph** (traverse calls and keep method bodies on screen with edges between them).
 
-The pipeline has two parts:
+The pipeline has three parts:
 
 | Part | Technology | Role |
 |------|------------|------|
-| **Analyzer** | .NET 9 console app | Opens a `.sln`, walks C# classes, writes a **graph cache** under `repository/` |
-| **Graph viewer** | React + Vite + Three.js | Loads the cache, binds JSON files together, renders a force-directed 3D graph |
+| **Analyzer** | .NET 9 (`ProjectExploration`) | Opens a `.sln`, walks types and methods, writes a **graph cache** under `repository/` |
+| **ExplorerServer** | ASP.NET Core API | Serves bundles, type/method metadata, and method source to the viewer |
+| **Graph viewer** | React + Vite + Three.js | 3D force graph for types; detail panel and **method call overlay** for invocation navigation |
 
 ---
 
@@ -27,8 +28,19 @@ Large solutions are hard to reason about from the file tree alone. ProjectExplor
 1. **Extracts** each class’s base types and interfaces (transitive interfaces included).
 2. **Stores** stable **HashName** identifiers (MD5 of the fully qualified type name) so graphs stay compact and mergeable.
 3. **Visualizes** parent/child relationships in 3D so you can see clusters, hubs, and dependencies at a glance.
+4. **Indexes methods** per type (signatures, file spans, resolved call sites) and lets you **walk method-to-method calls** in a persistent 2D call graph overlay.
 
-Typical uses: onboarding, refactors, finding who implements an interface, or checking what the analyzer captured for a solution.
+Typical uses: onboarding, refactors, finding who implements an interface, following control flow through method calls, or checking what the analyzer captured for a solution.
+
+### Type graph vs method call graph
+
+These are **separate views** on the same analysis run. Class hierarchy logic (`NodeManager`, relations JSON, 3D graph building) was **not redesigned**—method support is **additive**.
+
+| | Type hierarchy (3D) | Method call graph (overlay) |
+|--|---------------------|-----------------------------|
+| **Shows** | Classes/interfaces, inheritance & implementation | Method source bodies and call edges you open by clicking |
+| **Cache** | `{Solution}.json`, `.sln.json`, `*Nodes.json` | `*MethodIndex.json`, `MethodShards/` |
+| **Interaction** | Click node → parents, children, files, method list | Click call line → add callee card + SVG edge from that line |
 
 ---
 
@@ -58,12 +70,20 @@ After a successful run you should see a folder such as:
 ```text
 repository/
   Aimmy2/
-    Aimmy2.json           # hierarchy (edges)
-    Aimmy2.sln.json       # project → class hashes
-    Aimmy2Nodes.json      # hash → class metadata (per project)
+    Aimmy2.json              # type hierarchy (edges)
+    Aimmy2.sln.json          # project → class hashes
+    Aimmy2Nodes.json         # hash → class metadata (per project)
+    Aimmy2MethodIndex.json   # methodHash → method metadata + call sites (per project)
+    MethodShards/            # methodHash.json → metadata + body lines (fast API reads)
 ```
 
-For solutions with **multiple projects**, expect one `{ProjectName}Nodes.json` per project and multiple keys in `{Solution}.sln.json`.
+For solutions with **multiple projects**, expect one `{ProjectName}Nodes.json` and one `{ProjectName}MethodIndex.json` per project, plus a shared `MethodShards/` folder for that solution.
+
+Re-run analysis via the API when you change code or want fresh shards:
+
+```bash
+curl -X POST "http://localhost:5243/api/solutions/Aimmy2/analyze?slnPath=/absolute/path/to/Aimmy2.sln"
+```
 
 ### 2. Start the API (recommended)
 
@@ -102,6 +122,8 @@ All cached data for one analyzed **solution** lives in `repository/{SolutionName
 | `{Solution}.json` | `NodeManager.GetRelations()` | `parentHash → [ childHash, … ]` — edges in the graph |
 | `{Solution}.sln.json` | Analyzer project map | `projectName → [ hash, … ]` — which types belong to which project |
 | `{Project}Nodes.json` | `NodeManager` serialized nodes | `hash → TreeNode` — names, namespaces, file paths, parent/child lists |
+| `{Project}MethodIndex.json` | `MethodCallAnalyzer` | `methodHash → MethodMetadata` — type, name, file, body span, `calls[]` with source spans and optional `calleeMethodHash` |
+| `MethodShards/{methodHash}.json` | Analyzer (or server backfill) | Same metadata plus **body lines** for one-request loads in the call graph UI |
 
 ### Example `TreeNode` (in `*Nodes.json`)
 
@@ -165,11 +187,17 @@ flowchart LR
    - Walks **base types** (skips `Object` / `Window`) and adds `AddRelation(child, parent)`.
    - Walks **all interfaces** and adds `AddRelation(child, interface)`.
 4. Periodically writes `{Solution}/{Project}Nodes.json` (full node dictionary).
-5. After all projects:
+5. When a project **compilation** is available, runs **`MethodCallAnalyzer.AnalyzeCompilation`**:
+   - Enumerates ordinary methods, records body spans and invocation call sites (with callee hash when Roslyn resolves the target).
+   - Writes `{Solution}/{Project}MethodIndex.json` (metadata only).
+   - Writes `{Solution}/MethodShards/{methodHash}.json` (metadata + body text extracted from the syntax tree).
+6. After all projects:
    - Writes `{Solution}/{Solution}.json` — relation map.
    - Writes `{Solution}/{Solution}.sln.json` — project → hash sets.
 
 **Edge direction in the cache:** `AddRelation(child, parent)` stores **parent → children** in `_relations`. So in `Aimmy2.json`, keys are base types / interfaces; values are deriving / implementing types.
+
+Method hashes use `MethodMetadata.CreateMethodHash` (qualified type + method name + parameter types). Type hashes in the method index align with `TreeNode` hashing for the containing type.
 
 ### `Forest/NodeManager.cs`
 
@@ -185,6 +213,23 @@ Record holding identity (`HashName`, `Name`, `NameSpace`), graph links (`Parents
 
 - Writes JSON under `repository/` using a temp file + rename (safe against partial writes).
 - Supports subpaths like `Aimmy2/Aimmy2.json` via `WriteContentAsync`.
+
+### ExplorerServer (`server/ExplorerServer/`)
+
+HTTP API used by the graph viewer (and optional `curl` workflows). Important routes:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/solutions` | List solution folders under `repository/` |
+| `GET /api/solutions/{folder}/bundle` | Relations + project index + merged nodes (3D graph) |
+| `GET /api/solutions/{folder}/nodes/{hash}` | Single `TreeNode` |
+| `GET /api/solutions/{folder}/types/{typeHash}/methods` | Methods for a type |
+| `GET /api/solutions/{folder}/methods/{methodHash}/source` | Method metadata + body lines (reads **shard** when present) |
+| `POST /api/solutions/{folder}/analyze?slnPath=...` | Re-run Roslyn analysis and refresh cache |
+
+On startup, **`MethodShardBackfillHostedService`** can build missing `MethodShards/` from an existing method index (resume-friendly) so older caches gain fast loads without a full re-analyze. Configure `RepositoryLocation` and `SourceRoots` in `appsettings.Development.json`.
+
+See [server/ExplorerServer/README.md](server/ExplorerServer/README.md) for run and config details.
 
 ---
 
@@ -206,29 +251,38 @@ flowchart TB
     G["buildGraphData()"]
     FG["react-force-graph-3d"]
     PANEL["NodeDetailPanel"]
+    MCALL["MethodCallGraphPanel"]
+    API["ExplorerServer /api"]
   end
   R --> REL
   S --> IDX
   N --> STORE
+  API --> REL
+  API --> IDX
+  API --> STORE
   REL --> G
   IDX --> G
   STORE --> G
   G --> FG
   FG --> PANEL
   STORE --> PANEL
+  API --> PANEL
+  PANEL --> MCALL
+  API --> MCALL
 ```
 
 ### Key frontend modules (`graph-viewer/src/`)
 
 | Module | Purpose |
 |--------|---------|
-| `lib/solutionBundle.ts` | Load and merge the three JSON roles from `repository/{folder}/` |
-| `lib/discoverSolutionFolder.ts` | Detect valid bundle filenames in a folder or file picker |
+| `lib/solutionBundle.ts` | Load and merge type-graph JSON (API first, then `repository/` fallback) |
+| `lib/explorerApi.ts` | HTTP client for ExplorerServer (bundle, nodes, methods, source) |
+| `lib/methodViewCache.ts` | In-memory cache and throttled prefetch for method source views |
 | `lib/buildGraphData.ts` | Build `{ nodes, links }` for the force graph |
-| `lib/nodeDetails.ts` | Labels, neighbors, project membership for the detail panel |
-| `components/GraphViewer3D.tsx` | 3D canvas, colors, camera focus on search |
-| `components/NodeDetailPanel.tsx` | Click details: type, parents, children, files |
-| `App.tsx` | Toolbar: solution, project, hash search, browse local JSON |
+| `components/GraphViewer3D.tsx` | 3D canvas, colors, camera focus on hash search |
+| `components/NodeDetailPanel.tsx` | Type details, parents/children, **method list** (opens call graph) |
+| `components/MethodCallGraphPanel.tsx` | Persistent method cards, layout, SVG edges from invocation lines |
+| `App.tsx` | Toolbar, 3D graph, detail panel, full-screen method call overlay |
 
 ### Dev server and `repository/`
 
@@ -240,8 +294,16 @@ flowchart TB
 - **Optional:** “Show classes without edges” adds hashes from `.sln.json` with no edge in the relations file.
 - **Project dropdown:** filters which orphan hashes are considered; relations still define edges.
 - **Browse…:** multi-select local `.json` files (one relations file, one `.sln.json`, any `*Nodes.json`).
+- **Method call graph:** select a method from the type panel → overlay opens on the main canvas. Green lines are invocations; click to add the callee and draw an edge from that line. Nodes stay visible as you explore. Requires ExplorerServer and `*MethodIndex.json` (and ideally `MethodShards/`).
 
 Other solutions work with the **same JSON shapes**; names can differ as long as discovery rules are met (see [`graph-viewer/README.md`](graph-viewer/README.md)).
+
+### Method call graph (design summary)
+
+1. **State:** a set of **method nodes** (hash, layout position, source lines) and **edges** `(fromMethod, fromLine) → toMethod`.
+2. **Layout:** callees are placed to the right of the caller; siblings stack vertically.
+3. **Edges:** SVG paths from the right of the clicked source line to the left of the callee card; updated on scroll/resize.
+4. **Loading:** `GET .../methods/{hash}/source` returns metadata + lines in one round trip; client cache avoids duplicate fetches; hover uses low-priority prefetch.
 
 ---
 
@@ -249,25 +311,28 @@ Other solutions work with the **same JSON shapes**; names can differ as long as 
 
 ```text
 ProjectExplorer/
-├── README.md                 ← this file
+├── README.md                      ← this file
 ├── ProjectExplorer.sln
-├── Program.cs                ← analyzer entry
-├── Analyzation/
-│   └── AnalyzationClient.cs  ← Roslyn solution walk
-├── Data/
-│   └── FileRepository.cs     ← JSON cache I/O
-├── Forest/
-│   ├── TreeNode.cs
-│   ├── NodeManager.cs
-│   └── NodeType.cs
-├── repository/               ← generated cache (git-track or gitignore as you prefer)
-│   └── {Solution}/
-├── graph-viewer/             ← React 3D UI
+├── Program.cs                     ← analyzer entry (console)
+├── ProjectExploration/            ← shared analyzer + data libraries
+│   ├── Analyzation/
+│   │   ├── AnalyzationClient.cs   ← type hierarchy + method index/shards
+│   │   └── MethodCallAnalyzer.cs
+│   ├── Data/
+│   │   ├── FileRepository.cs
+│   │   ├── MethodIndexReader.cs
+│   │   ├── MethodShardStore.cs
+│   │   └── SourceCodeReader.cs
+│   ├── Forest/
+│   └── repository/                ← generated cache (default output location)
+│       └── {Solution}/
+├── server/
+│   └── ExplorerServer/            ← ASP.NET API
+├── graph-viewer/                  ← React UI (3D + method call graph)
 │   ├── src/
-│   ├── package.json
-│   └── README.md             ← viewer-only notes
+│   └── README.md
 └── docs/
-    └── screenshots/          ← add PNGs for README gallery
+    └── screenshots/
 ```
 
 ---
@@ -281,15 +346,18 @@ ProjectExplorer/
 | Skip `Object` / `Window` bases | `AnalyzationClient.cs` base-type loop |
 | Graph colors / camera | `GraphViewer3D.tsx` |
 | Which nodes appear | `buildGraphData.ts`, “orphan” flag in `App.tsx` |
+| API URL / proxy | `graph-viewer/vite.config.ts`, `VITE_API_BASE_URL`, `appsettings.Development.json` |
+| Source roots for shard backfill | `ExplorerServer` → `SourceRoots` |
 
 ---
 
 ## Limitations (current)
 
-- Analyzer focuses on **`class` declarations** (not records/structs/enums unless extended).
-- Relations reflect **base types and interfaces** from Roslyn; not method calls or project references.
+- Analyzer focuses on **`class` declarations** for the **type graph** (not records/structs/enums unless extended).
+- **Type relations** are base types and interfaces only—not project references or member-level coupling.
+- **Method call graph:** ordinary methods only; callees must resolve in-source for navigation; external/unresolved calls show as text without a target hash.
 - `NodeManager` state is global across projects in one run; node files are rewritten per syntax tree pass (last write wins for `_nodes` content per project file).
-- `Program.cs` uses **hard-coded paths**; there is no CLI argument parsing yet.
+- Console `Program.cs` uses **hard-coded paths**; prefer **`POST /api/.../analyze`** or edit paths before `dotnet run` on the analyzer.
 
 ---
 
@@ -302,5 +370,6 @@ Add your license and contribution notes here if this repo is shared publicly.
 ## See also
 
 - [Graph viewer README](graph-viewer/README.md) — bundle naming, browse mode, npm scripts
-- [Method call graph plan](docs/METHOD_CALL_GRAPH_PLAN.md) — method metadata, on-demand source, invocation navigation
+- [ExplorerServer README](server/ExplorerServer/README.md) — API routes and configuration
+- [Method call graph plan](ProjectExploration/docs/METHOD_CALL_GRAPH_PLAN.md) — original design notes for method metadata and navigation
 - [Screenshots folder](docs/screenshots/README.md) — suggested image names for the gallery above

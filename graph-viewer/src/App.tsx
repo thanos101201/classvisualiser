@@ -7,6 +7,7 @@ import {
   type FormEvent,
 } from 'react'
 import { GraphViewer3D } from './components/GraphViewer3D'
+import { MethodCallGraphPanel } from './components/MethodCallGraphPanel'
 import { NodeDetailPanel } from './components/NodeDetailPanel'
 import { buildGraphData, listProjects } from './lib/buildGraphData'
 import { readGraphFromJsonFile } from './lib/loadGraphFromFile'
@@ -49,6 +50,7 @@ function App() {
   const [graphSource, setGraphSource] = useState<'repository' | 'local'>(
     'repository',
   )
+  const [activeMethodHash, setActiveMethodHash] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const clearSelection = useCallback(() => {
@@ -197,6 +199,7 @@ function App() {
         setHighlightId(null)
         return
       }
+      setActiveMethodHash(null)
       focusNode(node.id)
     },
     [focusNode],
@@ -385,14 +388,33 @@ function App() {
           />
         )}
 
-        <aside className={`detail-panel ${selected ? 'open' : ''}`}>
-          {selected ? (
+        {activeMethodHash && activeBundleFolder && (
+          <div className="method-graph-overlay">
+            <MethodCallGraphPanel
+              solutionFolder={activeBundleFolder}
+              rootMethodHash={activeMethodHash}
+              onClose={() => setActiveMethodHash(null)}
+            />
+          </div>
+        )}
+
+        <aside
+          className={`detail-panel ${selected || activeMethodHash ? 'open' : ''}`}
+        >
+          {activeMethodHash ? (
+            <p className="hint panel-idle">
+              Method call graph is open on the canvas. Click highlighted call
+              lines to add callees; use ← Type details to close.
+            </p>
+          ) : selected ? (
             <NodeDetailPanel
               selected={selected}
               nodeStore={nodeStore}
               graphData={graphData}
               projectsIndex={projectsIndex}
+              solutionFolder={activeBundleFolder}
               onNavigate={focusNode}
+              onMethodSelect={setActiveMethodHash}
               onClose={() => {
                 setSelected(null)
                 setHighlightId(null)

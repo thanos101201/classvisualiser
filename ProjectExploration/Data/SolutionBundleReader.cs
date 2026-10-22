@@ -8,7 +8,8 @@ public record SolutionBundleManifest(
     string Folder,
     string RelationsFile,
     string SlnFile,
-    IReadOnlyList<string> NodeFiles);
+    IReadOnlyList<string> NodeFiles,
+    IReadOnlyList<string> MethodIndexFiles);
 
 public record SolutionBundleData(
     SolutionBundleManifest Manifest,
@@ -62,7 +63,8 @@ public class SolutionBundleReader
         var relationCandidates = files
             .Where(f => f.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
                         && !f.EndsWith(".sln.json", StringComparison.OrdinalIgnoreCase)
-                        && !f.EndsWith("Nodes.json", StringComparison.OrdinalIgnoreCase))
+                        && !f.EndsWith("Nodes.json", StringComparison.OrdinalIgnoreCase)
+                        && !f.EndsWith("MethodIndex.json", StringComparison.OrdinalIgnoreCase))
             .ToList();
 
         if (relationCandidates.Count == 0)
@@ -80,8 +82,19 @@ public class SolutionBundleReader
             .OrderBy(f => f)
             .ToList();
 
+        var methodIndexFiles = files
+            .Where(f => f.EndsWith("MethodIndex.json", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(f => f)
+            .ToList();
+
         var solutionName = relationsFile[..^".json".Length];
-        return new SolutionBundleManifest(solutionName, folder, relationsFile, slnFile, nodeFiles);
+        return new SolutionBundleManifest(
+            solutionName,
+            folder,
+            relationsFile,
+            slnFile,
+            nodeFiles,
+            methodIndexFiles);
     }
 
     public async Task<SolutionBundleData> LoadBundleAsync(string folder, CancellationToken cancellationToken = default)
