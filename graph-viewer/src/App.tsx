@@ -7,7 +7,7 @@ import {
   type FormEvent,
 } from 'react'
 import { GraphViewer3D } from './components/GraphViewer3D'
-import { MethodCodePanel } from './components/MethodCodePanel'
+import { MethodCallGraphPanel } from './components/MethodCallGraphPanel'
 import { NodeDetailPanel } from './components/NodeDetailPanel'
 import { buildGraphData, listProjects } from './lib/buildGraphData'
 import { readGraphFromJsonFile } from './lib/loadGraphFromFile'
@@ -388,16 +388,24 @@ function App() {
           />
         )}
 
-        <aside
-          className={`detail-panel ${selected || activeMethodHash ? 'open' : ''} ${activeMethodHash ? 'detail-panel-code' : ''}`}
-        >
-          {activeMethodHash && activeBundleFolder ? (
-            <MethodCodePanel
+        {activeMethodHash && activeBundleFolder && (
+          <div className="method-graph-overlay">
+            <MethodCallGraphPanel
               solutionFolder={activeBundleFolder}
-              methodHash={activeMethodHash}
+              rootMethodHash={activeMethodHash}
               onClose={() => setActiveMethodHash(null)}
-              onNavigateToMethod={setActiveMethodHash}
             />
+          </div>
+        )}
+
+        <aside
+          className={`detail-panel ${selected || activeMethodHash ? 'open' : ''}`}
+        >
+          {activeMethodHash ? (
+            <p className="hint panel-idle">
+              Method call graph is open on the canvas. Click highlighted call
+              lines to add callees; use ← Type details to close.
+            </p>
           ) : selected ? (
             <NodeDetailPanel
               selected={selected}
