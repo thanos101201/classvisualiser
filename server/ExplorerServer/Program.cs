@@ -39,6 +39,7 @@ builder.Services.AddSingleton(new FileRepository(repositoryPath));
 builder.Services.AddSingleton(new SolutionBundleReader(repositoryPath));
 builder.Services.AddSingleton(new MethodIndexReader(repositoryPath));
 builder.Services.AddSingleton(new MethodShardStore(repositoryPath));
+builder.Services.AddSingleton(new AnalyzeManifestStore(repositoryPath));
 builder.Services.AddSingleton(new SourceCodeReader(sourceRoots));
 builder.Services.AddHostedService<MethodShardBackfillHostedService>();
 builder.Services.AddSingleton<NodeManager>();

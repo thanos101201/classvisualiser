@@ -24,7 +24,8 @@ If empty, `Program.cs` resolves `../../ProjectExploration/repository` relative t
 | Method | Path | Purpose |
 |--------|------|---------|
 | GET | `/api/solutions` | List solution bundle manifests |
-| GET | `/api/solutions/{folder}/manifest` | Manifest only |
+| GET | `/api/solutions/{folder}/manifest` | Bundle file manifest (discovered JSON names) |
+| GET | `/api/solutions/{folder}/analyze-manifest` | Last analyze run: UTC time, Git commit, cache paths |
 | GET | `/api/solutions/{folder}/bundle` | Relations + project index + merged nodes (main graph load) |
 | GET | `/api/solutions/{folder}/nodes/{nodeHash}` | Single `TreeNode` for detail panel |
 | POST | `/api/solutions/{folder}/analyze?slnPath=...` | Re-run Roslyn analysis |
