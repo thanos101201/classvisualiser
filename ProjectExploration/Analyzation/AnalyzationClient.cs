@@ -12,7 +12,8 @@ namespace Analyzation;
 public class AnalyzationClient(
     NodeManager nodeManager,
     FileRepository repository,
-    MethodShardStore shardStore)
+    MethodShardStore shardStore,
+    AnalyzeManifestStore analyzeManifestStore)
 {
     private Dictionary<string, HashSet<string>> _projectNodeMap = new();
 
@@ -21,8 +22,12 @@ public class AnalyzationClient(
         MSBuildLocator.RegisterDefaults();
         using var workspace = MSBuildWorkspace.Create();
         var solution = await workspace.OpenSolutionAsync(slnPath);
-        var solutionName = Path.GetFileNameWithoutExtension(solution.FilePath);
+        var solutionPath = solution.FilePath ?? slnPath;
+        var solutionName = Path.GetFileNameWithoutExtension(solutionPath);
         shardStore.ClearSolutionShards(solutionName);
+
+        var nodeFiles = new List<string>();
+        var methodIndexFiles = new List<string>();
 
         foreach (var project in solution.Projects)  
         {
@@ -80,6 +85,7 @@ public class AnalyzationClient(
 
             var node = nodeManager.GetSerializedNodes();
             await repository.WriteContentAsync(node, @$"{solutionName}/{project.Name}Nodes");
+            nodeFiles.Add($"{project.Name}Nodes.json");
 
             if (compilation != null)
             {
@@ -88,12 +94,31 @@ public class AnalyzationClient(
                 var methodIndex = shards.ToDictionary(kv => kv.Key, kv => kv.Value.Method);
                 var methodJson = JsonSerializer.Serialize(methodIndex, new JsonSerializerOptions { WriteIndented = true });
                 await repository.WriteContentAsync(methodJson, @$"{solutionName}/{project.Name}MethodIndex");
+                methodIndexFiles.Add($"{project.Name}MethodIndex.json");
             }
         }
 
         var relations = nodeManager.GetRelations();
         await repository.WriteContentAsync(relations, @$"{solutionName}/{solutionName}");
         await repository.WriteContentAsync(JsonSerializer.Serialize(_projectNodeMap, new JsonSerializerOptions{WriteIndented=true}), @$"{solutionName}/{solutionName}.sln");
+
+        var commitSha = GitMetadata.TryGetCommitSha(solutionPath);
+        var analyzeManifest = new SolutionAnalyzeManifest(
+            SolutionAnalyzeManifest.CurrentSchemaVersion,
+            solutionName,
+            solutionName,
+            solutionPath,
+            DateTime.UtcNow,
+            commitSha,
+            GitMetadata.ShortSha(commitSha),
+            _projectNodeMap.Keys.OrderBy(n => n).ToList(),
+            $"{solutionName}.json",
+            $"{solutionName}.sln.json",
+            nodeFiles.OrderBy(f => f).ToList(),
+            methodIndexFiles.OrderBy(f => f).ToList(),
+            MethodShardStore.ShardDirectoryName);
+
+        await analyzeManifestStore.WriteAsync(analyzeManifest);
     }
 
     private TreeNode CreateNode(NodeType nodeType, string name, string nameSpace, List<string> filePaths)
