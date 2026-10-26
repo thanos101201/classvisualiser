@@ -1,0 +1,27 @@
+name: .NET
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Restore
+        run: dotnet restore ProjectExplorer.sln
+
+      - name: Build
+        run: dotnet build ProjectExplorer.sln --no-restore -c Release
+
+      - name: Test
+        run: dotnet test tests/ProjectExplorer.IntegrationTests/ProjectExplorer.IntegrationTests.csproj --no-build -c Release

@@ -51,6 +51,14 @@ These are **separate views** on the same analysis run. Class hierarchy logic (`N
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
 - [Node.js](https://nodejs.org/) 20+ (for the graph viewer)
 
+### Tests
+
+```bash
+dotnet test tests/ProjectExplorer.IntegrationTests/ProjectExplorer.IntegrationTests.csproj
+```
+
+Covers method call analysis, method index/shard I/O, and ExplorerServer `GET .../methods/{hash}/source`.
+
 ### 1. Generate the graph cache (.NET)
 
 ```bash
