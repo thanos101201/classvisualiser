@@ -124,6 +124,22 @@ All cached data for one analyzed **solution** lives in `repository/{SolutionName
 | `{Project}Nodes.json` | `NodeManager` serialized nodes | `hash → TreeNode` — names, namespaces, file paths, parent/child lists |
 | `{Project}MethodIndex.json` | `MethodCallAnalyzer` | `methodHash → MethodMetadata` — type, name, file, body span, `calls[]` with source spans and optional `calleeMethodHash` |
 | `MethodShards/{methodHash}.json` | Analyzer (or server backfill) | Same metadata plus **body lines** for one-request loads in the call graph UI |
+| `analyze-manifest.json` | `AnalyzationClient` (after each analyze) | **When** the cache was built, **Git commit** (if available), paths to relations/nodes/method index/shards |
+
+### `analyze-manifest.json` (versioning)
+
+Written after every successful analyze. Used later for **commit skew** warnings when investigating production incidents.
+
+| Field | Meaning |
+|-------|---------|
+| `schemaVersion` | Format version (currently `1`) |
+| `analyzedAtUtc` | ISO timestamp of the analyze run |
+| `commitSha` / `commitShaShort` | `git rev-parse HEAD` from the repo containing the `.sln` (null if not a git repo or git unavailable) |
+| `slnPath` | Absolute path to the solution file that was analyzed |
+| `projects` | Project names included in this run |
+| `relationsFile`, `slnIndexFile`, `nodeFiles`, `methodIndexFiles`, `methodShardsDirectory` | Cache layout for this folder |
+
+API: `GET /api/solutions/{folder}/analyze-manifest` (distinct from `GET .../manifest`, which lists bundle **file names** discovered on disk).
 
 ### Example `TreeNode` (in `*Nodes.json`)
 
@@ -222,6 +238,7 @@ HTTP API used by the graph viewer (and optional `curl` workflows). Important rou
 |----------|---------|
 | `GET /api/solutions` | List solution folders under `repository/` |
 | `GET /api/solutions/{folder}/bundle` | Relations + project index + merged nodes (3D graph) |
+| `GET /api/solutions/{folder}/analyze-manifest` | Last analyze time, Git commit, cache file paths |
 | `GET /api/solutions/{folder}/nodes/{hash}` | Single `TreeNode` |
 | `GET /api/solutions/{folder}/types/{typeHash}/methods` | Methods for a type |
 | `GET /api/solutions/{folder}/methods/{methodHash}/source` | Method metadata + body lines (reads **shard** when present) |

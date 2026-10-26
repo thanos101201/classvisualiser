@@ -5,6 +5,8 @@ namespace Data;
 
 public class MethodShardStore
 {
+    public const string ShardDirectoryName = "MethodShards";
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -19,7 +21,7 @@ public class MethodShardStore
     }
 
     public string GetShardDirectory(string solutionFolder) =>
-        Path.Combine(_repositoryRoot, solutionFolder, "MethodShards");
+        Path.Combine(_repositoryRoot, solutionFolder, ShardDirectoryName);
 
     public string GetShardPath(string solutionFolder, string methodHash) =>
         Path.Combine(GetShardDirectory(solutionFolder), $"{methodHash}.json");

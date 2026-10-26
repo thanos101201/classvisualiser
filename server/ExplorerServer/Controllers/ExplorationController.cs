@@ -10,6 +10,7 @@ namespace ExplorerServer.Controllers;
 [Route("api")]
 public class ExplorationController(
     SolutionBundleReader bundleReader,
+    AnalyzeManifestStore analyzeManifestStore,
     MethodIndexReader methodIndexReader,
     MethodShardStore methodShardStore,
     SourceCodeReader sourceCodeReader,
@@ -24,12 +25,24 @@ public class ExplorationController(
         return Ok(bundleReader.ListSolutions());
     }
 
-    /// <summary>Manifest only — relations file names, sln file, node files.</summary>
+    /// <summary>Bundle file manifest — relations file names, sln file, node files (discovered from disk).</summary>
     [HttpGet("solutions/{folder}/manifest")]
     public ActionResult<SolutionBundleManifest> GetManifest(string folder)
     {
         var manifest = bundleReader.DiscoverManifest(folder);
         return manifest == null ? NotFound() : Ok(manifest);
+    }
+
+    /// <summary>Last analyze run metadata — UTC time, Git commit, paths to cache files.</summary>
+    [HttpGet("solutions/{folder}/analyze-manifest")]
+    public async Task<ActionResult<SolutionAnalyzeManifest>> GetAnalyzeManifestAsync(
+        string folder,
+        CancellationToken cancellationToken)
+    {
+        var manifest = await analyzeManifestStore.TryReadAsync(folder, cancellationToken);
+        return manifest == null
+            ? NotFound($"No analyze-manifest.json for '{folder}'. Run analyze first.")
+            : Ok(manifest);
     }
 
     /// <summary>Full bundle for graph rendering (relations + project index + merged nodes).</summary>
